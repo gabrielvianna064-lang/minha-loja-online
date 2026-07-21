@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Central do Vendedor - App Store</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+
+body{
+
+background:#eef2ff;
+display:flex;
+
+}
+
+
+
+/* MENU */
+
+.sidebar{
+
+width:270px;
+height:100vh;
+background:#0f172a;
+color:white;
+position:fixed;
+padding:25px;
+
+}
+
+
+.logo{
+
+font-size:24px;
+font-weight:bold;
+margin-bottom:40px;
+
+}
+
+
+.menu a{
+
+display:flex;
+gap:12px;
+padding:15px;
+margin-bottom:10px;
+color:white;
+text-decoration:none;
+border-radius:12px;
+cursor:pointer;
+
+}
+
+
+.menu a:hover{
+
+background:#2563eb;
+
+}
+
+
+
+/* AREA */
+
+.main{
+
+margin-left:270px;
+padding:30px;
+width:100%;
+
+}
+
+
+
+.top{
+
+background:white;
+padding:20px;
+border-radius:20px;
+display:flex;
+justify-content:space-between;
+
+}
+
+
+
+/* CARDS */
+
+
+.cards{
+
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+margin-top:25px;
+
+}
+
+
+
+.card{
+
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 5px 20px #ddd;
+
+}
+
+
+.card h2{
+
+color:#2563eb;
+
+}
+
+
+
+/* PAGINAS */
+
+
+.page{
+
+display:none;
+margin-top:25px;
+background:white;
+padding:30px;
+border-radius:20px;
+
+}
+
+
+.active{
+
+display:block;
+
+}
+
+
+
+
+/* FORM */
+
+
+input,textarea,select{
+
+width:100%;
+padding:15px;
+margin:10px 0;
+border:1px solid #ddd;
+border-radius:10px;
+
+}
+
+
+
+button{
+
+background:#2563eb;
+color:white;
+border:0;
+padding:15px;
+border-radius:10px;
+cursor:pointer;
+
+}
+
+
+
+
+
+/* VITRINE */
+
+
+.apps{
+
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+
+}
+
+
+
+.app{
+
+background:white;
+border-radius:20px;
+padding:20px;
+box-shadow:0 5px 20px #ddd;
+
+}
+
+
+.app img{
+
+width:100%;
+height:150px;
+object-fit:cover;
+border-radius:15px;
+
+}
+
+
+
+
+table{
+
+width:100%;
+border-collapse:collapse;
+
+}
+
+
+td,th{
+
+padding:15px;
+border-bottom:1px solid #ddd;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+
+<!-- MENU -->
+
+
+<div class="sidebar">
+
+
+<div class="logo">
+🚀 App Seller
+</div>
+
+
+<div class="menu">
+
+
+<a onclick="page('dashboard')">
+🏠 Dashboard
+</a>
+
+
+<a onclick="page('produto')">
+📱 Cadastrar Aplicativo
+</a>
+
+
+
+<a onclick="page('meusapps')">
+📦 Meus Aplicativos
+</a>
+
+
+
+<a onclick="page('vendas')">
+📊 Relatório de Vendas
+</a>
+
+
+
+<a onclick="page('vitrine')">
+🛒 Vitrine
+</a>
+
+
+
+<a onclick="page('financeiro')">
+💰 Financeiro
+</a>
+
+
+
+<a onclick="page('config')">
+⚙ Configurações
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="main">
+
+
+
+<div class="top">
+
+<h1>
+Central do Vendedor
+</h1>
+
+
+<div>
+🔔 👤 Vendedor
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="page active">
+
+<div class="cards">
+
+<div class="card">
+<h2 id="downloads">0</h2>
+<p>Downloads</p>
+</div>
+
+
+<div class="card">
+<h2 id="faturamento">R$ 0</h2>
+<p>Faturamento</p>
+</div>
+
+
+<div class="card">
+<h2 id="aplicativos">0</h2>
+<p>Aplicativos</p>
+</div>
+
+
+<div class="card">
+<h2 id="avaliacao">0%</h2>
+<p>Avaliação</p>
+</div>
+
+
+</div>
+
+
+<br>
+
+<canvas id="grafico"></canvas>
+
+</div>
+
+
+
+
+<!-- CADASTRO -->
+
+<div id="produto" class="page">
+
+<h1>
+📱 Cadastrar Novo Aplicativo
+</h1>
+
+<input
+id="nomeApp"
+placeholder="Nome do aplicativo">
+
+<select id="sistemaApp">
+
+<option value="Android">
+Android
+</option>
+
+<option value="iOS">
+iOS
+</option>
+
+<option value="Windows">
+Windows
+</option>
+
+</select>
+
+<textarea
+id="descricaoApp"
+placeholder="Descrição do aplicativo">
+</textarea>
+
+<input
+id="precoApp"
+type="number"
+placeholder="Preço R$"
+oninput="calcularTaxa()">
+
+<!-- PAINEL DA TAXA -->
+
+<div id="painelTaxa" style="
+display:none;
+margin-top:10px;
+padding:15px;
+background:#f5f5f5;
+border:1px solid #ddd;
+border-radius:12px;
+">
+
+<p>
+💰 <b>Taxa da loja (10%):</b>
+<span id="valorTaxa">R$ 0,00</span>
+</p>
+
+<p>
+✅ <b>Você receberá:</b>
+<span id="valorReceber">R$ 0,00</span>
+</p>
+
+</div>
+
+<!-- IMAGEM DO APP -->
+
+<h3>
+🖼️ Imagem do Aplicativo
+</h3>
+
+<input
+type="file"
+id="imagemApp"
+accept="image/*">
+
+<br><br>
+
+<img
+id="previewApp"
+width="200"
+style="display:none;border-radius:15px;">
+
+<br><br>
+
+<!-- APK DO APLICATIVO -->
+
+<h3>
+📦 Arquivo APK
+</h3>
+
+<input
+type="file"
+id="arquivoAPK"
+accept=".apk">
+
+
+<button onclick="procurarAPK()">
+🔍 Procurar APK
+</button>
+
+
+<p id="nomeAPK"></p>
+
+
+
+<h3>
+🔗 Link do aplicativo
+</h3>
+
+
+<input
+id="downloadApp"
+placeholder="Cole o link para download">
+
+
+
+<button onclick="publicarApp()">
+🚀 Publicar App
+</button>
+
+</div>
+
+<script>
+function calcularTaxa() {
+
+    const preco = parseFloat(document.getElementById("precoApp").value);
+
+    if (isNaN(preco) || preco <= 0) {
+        document.getElementById("painelTaxa").style.display = "none";
+        return;
+    }
+
+    const porcentagem = 10; // Taxa da loja
+    const taxa = preco * porcentagem / 100;
+    const receber = preco - taxa;
+
+    document.getElementById("painelTaxa").style.display = "block";
+    document.getElementById("valorTaxa").textContent = "R$ " + taxa.toFixed(2);
+    document.getElementById("valorReceber").textContent = "R$ " + receber.toFixed(2);
+}
+</script>
+
+
+
+
+
+<!-- MEUS APPS -->
+
+
+<div id="meusapps" class="page">
+
+
+<h1>
+📦 Meus Aplicativos
+</h1>
+
+
+
+<table width="100%">
+
+
+<thead>
+
+<tr>
+
+<th>Aplicativo</th>
+
+<th>Sistema</th>
+
+<th>Status</th>
+
+<th>Downloads</th>
+
+<th>Preço</th>
+
+<th>Ação</th>
+
+</tr>
+
+</thead>
+
+
+
+<tbody id="listaMeusApps">
+
+
+<!-- Firebase vai carregar os aplicativos aqui -->
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+</div>
+
+
+
+<script>
+
+
+const imagemApp = document.getElementById("imagemApp");
+const previewApp = document.getElementById("previewApp");
+
+
+
+imagemApp.addEventListener("change", function(){
+
+
+    const arquivo = this.files[0];
+
+
+    if(arquivo){
+
+
+        const leitor = new FileReader();
+
+
+
+        leitor.onload = function(e){
+
+
+            previewApp.src = e.target.result;
+            previewApp.style.display = "block";
+
+
+        }
+
+
+        leitor.readAsDataURL(arquivo);
+
+
+    }
+
+
+});
+
+
+
+
+// PROCURAR APK
+
+function procurarAPK(){
+
+
+    const apk = document.getElementById("arquivoAPK").files[0];
+
+
+    if(apk){
+
+
+        document.getElementById("nomeAPK").innerHTML =
+
+        "✅ APK selecionado: " + apk.name;
+
+
+    }else{
+
+
+        document.getElementById("nomeAPK").innerHTML =
+
+        "❌ Nenhum APK selecionado";
+
+
+    }
+
+
+}
+
+
+</script>
+
+
+<!-- VENDAS -->
+
+
+<div id="vendas" class="page">
+
+
+<h1>
+Relatório de Vendas
+</h1>
+
+
+
+<table id="tabelaVendas">
+
+
+<tr>
+
+<th>Cliente</th>
+<th>Produto</th>
+<th>Valor</th>
+<th>Data</th>
+
+
+</tr>
+
+
+<tr>
+
+<td colspan="4">
+Nenhuma venda realizada ainda.
+</td>
+
+</tr>
+
+
+
+</table>
+
+
+</div>
+
+
+
+
+
+<!-- VITRINE -->
+
+
+<div id="vitrine" class="page">
+
+
+<h1>
+🛒 Minha Vitrine Pública
+</h1>
+
+
+<div class="apps" id="listaProdutos">
+
+
+<!-- Produtos do Firebase aparecem aqui -->
+
+
+</div>
+
+
+</div>
+
+
+<!-- FINANCEIRO -->
+
+
+<div id="financeiro" class="page">
+
+<h1>
+Financeiro
+</h1>
+
+
+<h2>
+Saldo disponível:
+R$ 5.400
+</h2>
+
+
+<button>
+Solicitar saque
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- CONFIG -->
+
+
+<div id="config" class="page">
+
+
+<h1>
+Configurações
+</h1>
+
+
+<input placeholder="Nome da loja">
+
+
+<input placeholder="Email">
+
+
+<button>
+Salvar
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<script type="module">
+
+
+import { initializeApp } from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import { 
+getDatabase,
+ref,
+push,
+set,
+onValue
+} from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+
+// CONFIG FIREBASE
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyAMG8workhkRJapQm1AHSMOSIPOnSWltpw",
+
+authDomain: "minha-loja-5477a.firebaseapp.com",
+
+databaseURL:
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId: "minha-loja-5477a",
+
+storageBucket: "minha-loja-5477a.firebasestorage.app",
+
+messagingSenderId: "680448342361",
+
+appId:
+"1:680448342361:web:e35226b350ac4504d6f448",
+
+measurementId:"G-0FBN3SDTNR"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+
+const db = getDatabase(app);
+
+
+// LOGIN DO VENDEDOR
+
+import { 
+getAuth,
+onAuthStateChanged
+} from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+const auth = getAuth(app);
+
+let usuario = null;
+
+
+onAuthStateChanged(auth,(user)=>{
+
+    if(user){
+
+        usuario = user;
+
+        console.log("Vendedor logado:", usuario.uid);
+
+    }else{
+
+        console.log("Nenhum vendedor logado");
+
+    }
+
+});
+
+
+
+
+
+// TROCAR PAGINAS
+
+
+window.page = function(id){
+
+
+document.querySelectorAll(".page")
+.forEach(p=>{
+
+p.classList.remove("active");
+
+});
+
+
+document.getElementById(id)
+.classList.add("active");
+
+
+}
+
+// CADASTRAR APLICATIVO
+
+window.publicarApp = function(){
+
+
+let nome =
+document.getElementById("nomeApp").value;
+
+
+let sistema =
+document.getElementById("sistemaApp").value;
+
+
+let descricao =
+document.getElementById("descricaoApp").value;
+
+
+let preco =
+Number(document.getElementById("precoApp").value);
+
+
+let imagem =
+document.getElementById("imagemApp").value;
+
+
+let download =
+document.getElementById("downloadApp").value;
+
+
+// PEGAR APK
+
+let arquivoAPK =
+document.getElementById("arquivoAPK").files[0];
+
+
+let nomeAPK = "";
+
+
+if(arquivoAPK){
+
+nomeAPK = arquivoAPK.name;
+
+}
+
+
+
+// ID DO VENDEDOR
+
+let idVendedor = usuario ? usuario.uid : "sem-vendedor";
+
+
+
+// CALCULAR TAXA
+
+let porcentagemTaxa = 10;
+
+let taxa = preco * porcentagemTaxa / 100;
+
+let vendedorRecebe = preco - taxa;
+
+
+
+// SALVAR NA CENTRAL DO VENDEDOR
+
+let novoApp =
+push(ref(db,"aplicativos"));
+
+
+set(novoApp,{
+
+nome:nome,
+
+sistema:sistema,
+
+descricao:descricao,
+
+preco:preco,
+
+taxa:taxa,
+
+receber:vendedorRecebe,
+
+imagem:imagem,
+
+download:download,
+
+apk:nomeAPK,
+
+vendas:0,
+
+status:"Publicado",
+
+data:new Date().toLocaleDateString(),
+
+
+// ID DO VENDEDOR DONO DO APP
+vendedorId:idVendedor
+
+});
+
+
+
+// ENVIAR PARA A LOJA
+
+let novoProduto =
+push(ref(db,"produtos"));
+
+
+set(novoProduto,{
+
+nome:nome,
+
+categoria:"Aplicativo",
+
+sistema:sistema,
+
+descricao:descricao,
+
+preco:preco,
+
+taxa:taxa,
+
+receber:vendedorRecebe,
+
+imagem:imagem,
+
+download:download,
+
+apk:nomeAPK,
+
+vendas:0,
+
+status:"Disponível",
+
+data:new Date().toLocaleDateString(),
+
+vendedor:"Vendedor",
+
+
+// ID DO VENDEDOR DONO DO PRODUTO
+vendedorId:idVendedor
+
+});
+
+
+
+alert(
+`🚀 Aplicativo publicado!
+
+Preço: R$ ${preco.toFixed(2)}
+Taxa da loja: R$ ${taxa.toFixed(2)}
+Você receberá: R$ ${vendedorRecebe.toFixed(2)}`
+);
+
+
+}
+// GRÁFICO DE VENDAS REAL DO FIREBASE
+
+
+let grafico;
+
+
+
+onValue(ref(db,"vendas"),(snapshot)=>{
+
+
+let vendas = [];
+
+let meses = [];
+
+
+
+snapshot.forEach((item)=>{
+
+
+let venda=item.val();
+
+
+
+vendas.push(Number(venda.valor));
+
+
+meses.push(venda.data || "Venda");
+
+
+});
+
+
+
+
+
+if(grafico){
+
+grafico.destroy();
+
+}
+
+
+
+
+grafico = new Chart(
+
+document.getElementById('grafico'),
+
+{
+
+
+type:'line',
+
+
+data:{
+
+
+labels:meses,
+
+
+datasets:[{
+
+
+label:"Vendas R$",
+
+
+data:vendas
+
+
+}]
+
+
+},
+
+
+
+options:{
+
+
+responsive:true
+
+
+}
+
+
+
+}
+
+
+
+);
+
+
+
+});
+
+
+
+
+
+
+// CONTAR APLICATIVOS
+
+
+onValue(ref(db,"aplicativos"),(snapshot)=>{
+
+
+let total = snapshot.size;
+
+
+console.log(
+"Total de aplicativos:",
+total
+);
+
+
+
+});
+
+
+
+
+
+
+// ENVIAR PRODUTOS PARA A VITRINE
+
+const vitrine =
+document.getElementById("listaProdutos");
+
+onValue(ref(db,"produtos"),(snapshot)=>{
+
+    if(!vitrine) return;
+
+    vitrine.innerHTML="";
+
+    snapshot.forEach((item)=>{
+
+        let produto = item.val();
+
+        vitrine.innerHTML += `
+
+        <div class="app" onclick="abrirProduto('${item.key}')">
+
+            <img
+            src="${produto.imagem || 'imagem-padrao.png'}"
+            width="200">
+
+            <h2>
+            ${produto.nome}
+            </h2>
+
+            <p>
+            ${produto.descricao}
+            </p>
+
+            <h3>
+            R$ ${produto.preco}
+            </h3>
+
+            <p>
+            📱 ${produto.sistema}
+            </p>
+
+        </div>
+
+        `;
+
+    });
+
+});
+
+// ABRIR PÁGINA DO PRODUTO
+
+window.abrirProduto = function(id){
+
+    window.location.href = "produto.html?id=" + id;
+
+}
+
+
+
+// 📦 MOSTRAR MEUS APLICATIVOS
+
+const listaMeusApps =
+document.getElementById("listaMeusApps");
+
+
+onValue(ref(db,"aplicativos"),(snapshot)=>{
+
+
+    if(!listaMeusApps) return;
+
+
+    listaMeusApps.innerHTML="";
+
+
+    snapshot.forEach((item)=>{
+
+
+        let app = item.val();
+
+
+
+        // MOSTRAR SOMENTE OS MEUS APLICATIVOS
+
+        if(app.vendedorId == usuario.uid){
+
+
+
+        listaMeusApps.innerHTML += `
+
+        <tr>
+
+            <td>${app.nome}</td>
+
+            <td>${app.sistema}</td>
+
+            <td>${app.status}</td>
+
+            <td>${app.download || 0}</td>
+
+            <td>R$ ${app.preco}</td>
+
+            <td>
+                <button>Editar</button>
+            </td>
+
+        </tr>
+
+        `;
+
+
+        }
+
+
+    });
+
+
+});
+
+</script>
+
+</body>
+
+</html>

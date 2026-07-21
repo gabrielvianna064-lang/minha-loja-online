@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Loja de Aplicativos</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+background:#f4f6fb;
+}
+
+/* TOPO */
+
+header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:15px;
+background:#0d6efd;
+color:white;
+position:sticky;
+top:0;
+z-index:100;
+}
+
+.logo{
+font-size:24px;
+font-weight:bold;
+}
+
+.search{
+flex:1;
+margin:0 20px;
+}
+
+.search input{
+width:100%;
+padding:12px;
+border:none;
+border-radius:30px;
+font-size:16px;
+}
+
+.icons button{
+background:white;
+border:none;
+padding:10px 18px;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+margin-left:10px;
+}
+
+/* MENU */
+
+#menu{
+position:fixed;
+left:-260px;
+top:0;
+width:250px;
+height:100%;
+background:#222;
+transition:.4s;
+padding-top:70px;
+z-index:999;
+}
+
+#menu a{
+display:block;
+padding:15px;
+color:white;
+text-decoration:none;
+}
+
+#menu a:hover{
+background:#444;
+}
+
+#menu.ativo{
+left:0;
+}
+
+#fechar{
+position:absolute;
+top:10px;
+right:10px;
+background:red;
+color:white;
+border:none;
+padding:8px 15px;
+cursor:pointer;
+}
+
+/* GRID */
+
+.container{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+padding:30px;
+}
+
+.card{
+background:white;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+overflow:hidden;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+}
+
+.card img{
+width:100%;
+height:170px;
+object-fit:cover;
+}
+
+.card h3{
+padding:10px;
+}
+
+.card p{
+padding:0 10px;
+color:#555;
+}
+
+.preco{
+padding:10px;
+font-size:22px;
+color:#0d6efd;
+font-weight:bold;
+}
+
+.card button{
+width:90%;
+margin:15px;
+padding:12px;
+border:none;
+background:#0d6efd;
+color:white;
+font-size:16px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.card button:hover{
+background:#0953c9;
+}
+
+</style>
+</head>
+<body>
+<div id="menu">
+
+    <button id="fechar">✖</button>
+
+    <a href="loja.html">🏠 Início</a>
+    <a href="seja um vendedor.html">🛍️ Seja Vendedor</a>
+    <a href="regras da loja.html">📜 Regras</a>
+
+</div>
+<header>
+
+    <button onclick="abrirMenu()">☰</button>
+
+    <div class="logo">
+        APP STORE
+    </div>
+
+    <div class="search">
+        <input
+            type="text"
+            id="pesquisa"
+            placeholder="Pesquisar aplicativos..."
+            onkeyup="pesquisar()">
+    </div>
+
+    <div class="icons">
+
+        <button onclick="window.location.href='cadrastro na loja.html'">
+            👤 Cadastrar
+        </button>
+
+        <button onclick="window.location.href='Carrio.html'">
+            🛒 Carrinho
+        </button>
+
+    </div>
+
+</header>
+
+<div class="container" id="produtos">
+
+<div class="card">
+
+<img src="https://picsum.photos/300/200?1">
+
+<h3>WhatsApp Premium</h3>
+
+<p>Versão personalizada.</p>
+
+<div class="preco">R$ 29,90</div>
+
+<button>Comprar</button>
+
+</div>
+
+<div class="card">
+
+<img src="https://picsum.photos/300/200?2">
+
+<h3>Editor de Vídeo Pro</h3>
+
+<p>Aplicativo profissional.</p>
+
+<div class="preco">R$ 49,90</div>
+
+<button>Comprar</button>
+
+</div>
+
+<div class="card">
+
+<img src="https://picsum.photos/300/200?3">
+
+<h3>Player IPTV</h3>
+
+<p>Aplicativo IPTV Premium.</p>
+
+<div class="preco">R$ 39,90</div>
+
+<button>Comprar</button>
+
+</div>
+
+<div class="card">
+
+<img src="https://picsum.photos/300/200?4">
+
+<h3>Spotify Premium</h3>
+
+<p>Versão modificada.</p>
+
+<div class="preco">R$ 19,90</div>
+
+<button>Comprar</button>
+
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    push,
+    set,
+    onValue
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+/*=========================
+ FIREBASE
+=========================*/
+
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "minha-loja-5477a.firebaseapp.com",
+    databaseURL: "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "minha-loja-5477a",
+    storageBucket: "minha-loja-5477a.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/*=========================
+ MENU
+=========================*/
+
+window.abrirMenu = function () {
+    document.getElementById("menu").classList.add("ativo");
+};
+
+document.getElementById("fechar").onclick = function () {
+    document.getElementById("menu").classList.remove("ativo");
+};
+
+/*=========================
+ PESQUISA
+=========================*/
+
+window.pesquisar = function () {
+
+    let filtro = document
+        .getElementById("pesquisa")
+        .value
+        .toUpperCase();
+
+    let cards = document.querySelectorAll(".card");
+
+    cards.forEach(card => {
+
+        let nome = card.querySelector("h3").textContent.toUpperCase();
+
+        card.style.display =
+            nome.indexOf(filtro) > -1
+                ? "block"
+                : "none";
+
+    });
+
+};
+/*=========================
+MOSTRAR PRODUTOS
+=========================*/
+
+const listaProdutos = document.getElementById("produtos");
+
+onValue(ref(db, "produtos"), (snapshot) => {
+
+    listaProdutos.innerHTML = "";
+
+    if (!snapshot.exists()) {
+        listaProdutos.innerHTML = "<h2>Nenhum produto cadastrado.</h2>";
+        return;
+    }
+
+    snapshot.forEach((item) => {
+
+        const produto = item.val();
+        const id = item.key;
+
+        listaProdutos.innerHTML += `
+
+            <div class="card" onclick="abrirProduto('${id}')" style="cursor:pointer;">
+
+                <img
+                    src="${produto.imagem || 'imagem-padrao.png'}"
+                    alt="${produto.nome}">
+
+                <h3>${produto.nome}</h3>
+
+                <p>${produto.descricao}</p>
+
+                <div class="preco">
+                    R$ ${produto.preco}
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+});
+
+/*=========================
+ABRIR PÁGINA DO PRODUTO
+=========================*/
+
+window.abrirProduto = function(id) {
+    location.href = "produto.html?id=" + id;
+};
+
+/*=========================
+ABRIR PÁGINA DO PRODUTO
+=========================*/
+
+window.abrirProduto = function(id) {
+    location.href = "produto.html?id=" + id;
+};
+
+/*=========================
+ABRIR PÁGINA DO PRODUTO
+=========================*/
+
+window.abrirProduto = function(id) {
+    location.href = "produto.html?id=" + id;
+};
+/*=========================
+ABRIR PRODUTO
+=========================*/
+
+window.abrirProduto = function(id){
+
+    // Salva o ID como segurança
+    localStorage.setItem("idProduto", id);
+
+    // Abre a página de informações
+    location.href = "produto.html?id=" + id;
+
+}
+
+/*=========================
+CARRINHO
+=========================*/
+
+window.adicionarCarrinho = function(produto){
+
+    push(ref(db,"carrinhos"),{
+
+        nome: produto.nome,
+
+        preco: produto.preco,
+
+        imagem: produto.imagem,
+
+        arquivo: produto.arquivo || "",
+
+        vendedor: produto.vendedor || "",
+
+        descricao: produto.descricao || "",
+
+        categoria: produto.categoria || "",
+
+        data: new Date().toLocaleString()
+
+    });
+
+    alert("Produto adicionado ao carrinho!");
+
+}
+
+/*=========================
+PEDIDOS
+=========================*/
+
+window.salvarPedido = function(dados){
+
+    push(ref(db,"pedidos"), dados);
+
+}
+/*=========================
+ ORDERS
+=========================*/
+
+window.salvarOrder = function(dados){
+
+    push(ref(db,"orders"),dados);
+
+}
+
+/*=========================
+ PAGAMENTOS
+=========================*/
+
+window.salvarPagamento = function(dados){
+
+    push(ref(db,"pagamentos"),dados);
+
+}
+
+/*=========================
+ USUÁRIOS
+=========================*/
+
+window.salvarUsuario = function(usuario){
+
+    push(ref(db,"usuarios"),usuario);
+
+}
+
+/*=========================
+ CONECTADOS
+=========================*/
+
+set(ref(db,"conectado"),{
+
+    online:true,
+    horario:new Date().toLocaleString()
+
+});
+
+
+/*=========================
+ CONECTAR MERCADO PAGO
+=========================*/
+
+window.conectarMercadoPago = function(){
+
+    window.location.href =
+    "https://minha-loja-wco2.onrender.com/conectar-mercadopago";
+
+}
+
+</script>

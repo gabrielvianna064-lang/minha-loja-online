@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Cadastro de Vendedor</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 {
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: #1e8449;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Cadastro de Vendedor</h2>
+
+    <input type="text" id="nome" placeholder="Nome completo">
+
+    <input type="email" id="email" placeholder="Email">
+
+    <input type="password" id="senha" placeholder="Senha">
+
+    <input type="text" id="cpf" placeholder="CPF">
+
+    <input type="text" id="loja" placeholder="Nome da loja">
+
+    <button onclick="cadastrar()">
+        Entrar como Vendedor
+    </button>
+
+</div>
+<script>
+const DB_URL = "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app";
+
+
+// =========================
+// CADASTRO VENDEDOR
+// =========================
+async function cadastrar() {
+
+    const nome = document.getElementById("nome").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const cpf = document.getElementById("cpf").value;
+    const loja = document.getElementById("loja").value;
+
+
+    if (!nome || !email || !senha || !cpf || !loja) {
+        alert("⚠️ Preencha todos os campos!");
+        return;
+    }
+
+
+    const vendedor = {
+        nome,
+        email,
+        senha,
+        cpf,
+        loja,
+        tipo: "vendedor",
+        criadoEm: new Date().toISOString()
+    };
+
+
+    try {
+
+        const res = await fetch(DB_URL + "/vendedores.json", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(vendedor)
+        });
+
+
+        const data = await res.json();
+
+
+        if (res.ok) {
+
+
+            localStorage.setItem("vendedorLogado", JSON.stringify({
+
+                id: data.name,
+                nome,
+                email,
+                cpf,
+                loja
+
+            }));
+
+
+            alert("✅ Cadastro realizado com sucesso!");
+
+
+            window.location.href = "central do vendedor.html";
+
+
+        } else {
+
+            alert("❌ Erro ao cadastrar vendedor");
+
+        }
+
+
+    } catch (err) {
+
+        console.log(err);
+
+        alert("❌ Erro de conexão com Firebase");
+
+    }
+
+}
+
+
+// =========================
+// 🛒 SALVAR PRODUTO NA LOJA (IMPORTANTE)
+// =========================
+async function salvarProdutoLoja(nome, desc, preco) {
+
+    const produto = {
+        nome,
+        desc,
+        preco,
+        status: "ativo",
+        criadoEm: new Date().toISOString()
+    };
+
+    await fetch(DB_URL + "/loja.json", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(produto)
+    });
+
+    alert("🛒 Produto enviado para loja!");
+}
+
+
+// =========================
+// 📦 CARREGAR LOJA (CORRIGIDO)
+// =========================
+async function carregarLoja() {
+    const box = document.getElementById("listaLoja");
+
+    if (!box) return;
+
+    try {
+        const res = await fetch(DB_URL + "/loja.json");
+        const data = await res.json();
+
+        box.innerHTML = "";
+
+        if (!data) {
+            box.innerHTML = "<p>Nenhum produto na loja</p>";
+            return;
+        }
+
+        Object.values(data).forEach(p => {
+            box.innerHTML += `
+                <div class="item">
+                    🛒 <b>${p.nome}</b><br>
+                    ${p.desc || ""}<br>
+                    💰 R$ ${p.preco}
+                    <br><br>
+                    <button onclick="comprar('${p.nome}', ${p.preco})">
+                        Comprar
+                    </button>
+                </div>
+            `;
+        });
+
+    } catch (err) {
+        console.log(err);
+        box.innerHTML = "<p>Erro ao carregar loja</p>";
+    }
+}
+
+
+// =========================
+// 💳 COMPRA
+// =========================
+async function comprar(nome, valor) {
+    await fetch(DB_URL + "/vendas.json", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            produto: nome,
+            valor,
+            data: new Date().toISOString()
+        })
+    });
+
+    alert("✅ Compra realizada!");
+}
+
+
+// =========================
+// 🚀 AUTO CARREGAR LOJA
+// =========================
+document.addEventListener("DOMContentLoaded", ()=>{
+    carregarLoja();
+});
+</script>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pagamento - Minha Loja</title>
+
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+
+body{
+
+margin:0;
+background:#f2f2f2;
+
+}
+
+
+.checkout{
+
+max-width:450px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 3px 10px #ddd;
+
+}
+
+
+
+h1{
+
+text-align:center;
+color:#0066ff;
+
+}
+
+
+
+.produto{
+
+display:flex;
+gap:15px;
+background:#f5f5f5;
+padding:12px;
+border-radius:10px;
+margin-bottom:10px;
+align-items:center;
+
+}
+
+
+
+.produto img{
+
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:10px;
+
+}
+
+
+
+.info{
+
+flex:1;
+
+}
+
+
+
+.preco{
+
+color:#0066ff;
+font-weight:bold;
+
+}
+
+
+
+.total{
+
+text-align:center;
+font-size:30px;
+font-weight:bold;
+color:#0066ff;
+margin:20px;
+
+}
+
+
+
+.formas{
+
+display:flex;
+gap:10px;
+
+}
+
+
+
+.formas button{
+
+flex:1;
+padding:12px;
+border:0;
+border-radius:10px;
+background:#0066ff;
+color:white;
+cursor:pointer;
+
+}
+
+
+
+.area{
+
+display:none;
+margin-top:20px;
+background:#eef5ff;
+padding:15px;
+border-radius:10px;
+
+}
+
+
+
+input{
+
+width:100%;
+padding:12px;
+margin:5px 0;
+
+}
+
+
+
+.finalizar{
+
+width:100%;
+margin-top:20px;
+padding:15px;
+background:#00a650;
+color:white;
+border:0;
+border-radius:10px;
+font-size:18px;
+cursor:pointer;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="checkout">
+
+
+<h1>💳 Pagamento</h1>
+
+
+
+<div id="produtos"></div>
+
+
+
+<div class="total">
+
+R$ <span id="total">0,00</span>
+
+</div>
+
+
+
+<div class="formas">
+
+
+<button onclick="pix()">
+
+PIX
+
+</button>
+
+
+<button onclick="cartao()">
+
+💳 Cartão
+
+</button>
+
+
+</div>
+
+
+
+
+
+<div id="pixArea" class="area">
+
+
+<h3>PIX</h3>
+
+
+<div id="qrPix">
+
+<p>O QR Code Pix aparecerá aqui após finalizar.</p>
+
+</div>
+
+
+
+<button onclick="copiar()">
+
+Copiar PIX
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+<div id="cartaoArea" class="area">
+
+
+<h3>Cartão</h3>
+
+
+<input placeholder="Número do cartão">
+
+
+<input placeholder="Nome">
+
+
+<input placeholder="Validade">
+
+
+</div>
+
+
+
+
+
+<button class="finalizar" onclick="finalizar()">
+
+Finalizar pagamento
+
+</button>
+
+
+
+</div>
+
+
+<script type="module">
+
+
+import {initializeApp}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+getDatabase,
+ref,
+get,
+push,
+set
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+
+const firebaseConfig={
+
+
+databaseURL:
+
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app"
+
+
+};
+
+
+
+const app=initializeApp(firebaseConfig);
+
+
+const db=getDatabase(app);
+
+
+
+
+
+let produtos = [];
+
+let total = 0;
+
+
+// pega o id do produto da página
+
+const parametros = new URLSearchParams(window.location.search);
+
+const idProduto = parametros.get("id");
+
+
+
+async function buscarProduto(){
+
+
+if(idProduto){
+
+
+const produtoRef = ref(db,"produtos/"+idProduto);
+
+
+const snapshot = await get(produtoRef);
+
+
+
+if(snapshot.exists()){
+
+
+let produto = snapshot.val();
+
+
+
+produtos = [produto];
+
+
+total = Number(produto.preco);
+
+
+
+carregar();
+
+
+return;
+
+
+}
+
+
+}
+
+
+
+// caso seja carrinho
+
+produtos = JSON.parse(
+
+localStorage.getItem("produtosPagamento")
+
+) || [];
+
+
+
+total = Number(
+
+localStorage.getItem("totalPagamento")
+
+) || 0;
+
+
+
+carregar();
+
+
+}
+
+let metodo="";
+
+
+
+
+
+function carregar(){
+
+
+let div=document.getElementById("produtos");
+
+
+div.innerHTML="";
+
+
+
+produtos.forEach(p=>{
+
+
+div.innerHTML += `
+
+
+<div class="produto">
+
+
+<img src="${p.imagem}">
+
+
+<div class="info">
+
+
+<b>${p.nome}</b>
+
+
+<p class="preco">
+
+R$ ${Number(p.preco).toFixed(2)}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+
+document.getElementById("total").innerHTML=
+
+total.toFixed(2).replace(".",",");
+
+
+
+}
+
+
+
+window.pix=function(){
+
+
+metodo="PIX";
+
+
+document.getElementById("pixArea").style.display="block";
+
+
+document.getElementById("cartaoArea").style.display="none";
+
+
+}
+
+
+
+window.cartao=function(){
+
+
+metodo="Cartão";
+
+
+document.getElementById("cartaoArea").style.display="block";
+
+
+document.getElementById("pixArea").style.display="none";
+
+
+}
+
+
+
+
+
+window.copiar=function(){
+
+
+navigator.clipboard.writeText(
+
+"00020126580014BR.GOV.BCB.PIX"
+
+);
+
+
+alert("PIX copiado");
+
+
+}
+
+
+
+
+
+
+window.finalizar=async function(){
+
+
+if(metodo==""){
+
+
+alert("Escolha a forma de pagamento");
+
+return;
+
+}
+
+
+
+
+
+let pagamento={
+
+
+produtos:produtos,
+
+
+valor:total,
+
+
+metodo:metodo,
+
+
+status:"aguardando pagamento",
+
+
+data:new Date().toLocaleString()
+
+
+};
+
+
+
+
+
+let refPagamento=
+
+push(ref(db,"pagamentos"));
+
+
+
+await set(refPagamento,pagamento);
+
+
+
+
+
+
+// Mercado Pago
+
+let resposta=await fetch(
+
+"https://minha-loja-wco2.onrender.com/criar-pagamento",
+
+{
+
+
+method:"POST",
+
+headers:{
+
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+
+produto:"Pedido da loja",
+
+valor:total
+
+
+})
+
+
+}
+
+);
+
+
+
+let dados = await resposta.json();
+
+
+
+if(dados.url){
+
+
+window.location.href = dados.url;
+
+
+}else{
+
+
+alert("Erro ao gerar pagamento");
+
+
+}
+
+
+}
+
+
+// Finalizar pagamento
+
+
+window.finalizar = async function(){
+
+
+if(metodo==""){
+
+
+alert("Escolha a forma de pagamento");
+
+return;
+
+
+}
+
+
+
+
+// PIX
+
+if(metodo=="PIX"){
+
+
+let resposta = await fetch(
+
+"https://minha-loja-wco2.onrender.com/criar-pix",
+
+{
+
+
+method:"POST",
+
+headers:{
+
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+valor:total
+
+})
+
+
+}
+
+);
+
+
+
+let dados = await resposta.json();
+
+
+
+if(dados.qr_code_base64){
+
+
+document.getElementById("pixArea").innerHTML = `
+
+
+<h3>Escaneie o QR Code Pix</h3>
+
+
+<img width="250"
+
+src="data:image/png;base64,${dados.qr_code_base64}">
+
+
+<p>Pix copia e cola:</p>
+
+
+<textarea style="width:100%;height:80px">
+
+${dados.qr_code}
+
+</textarea>
+
+
+`;
+
+
+
+}else{
+
+
+alert("Erro ao gerar PIX");
+
+
+}
+
+
+return;
+
+
+}
+
+
+
+}
+
+
+
+
+
+buscarProduto();
+
+</script>
+
+
+</body>
+
+</html>

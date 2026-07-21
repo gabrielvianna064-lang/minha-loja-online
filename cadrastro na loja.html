@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Cadastro da Loja</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    background: white;
+    width: 340px;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #111827;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #3b82f6;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2563eb;
+}
+
+.small {
+    font-size: 12px;
+    color: gray;
+    margin-top: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>🛒 Criar Conta na Loja</h2>
+
+<input type="text" id="nome" placeholder="Seu nome">
+
+<input type="email" id="email" placeholder="Seu email">
+
+<input type="password" id="senha" placeholder="Sua senha">
+
+<button onclick="cadastrar()">Cadastrar</button>
+
+<div class="small">
+Após o cadastro você será direcionado para a loja
+</div>
+
+</div>
+
+
+<script>
+
+const DB_URL = "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app";
+
+
+async function cadastrar(){
+
+
+    const nome = document.getElementById("nome").value.trim();
+
+    const email = document.getElementById("email").value.trim();
+
+    const senha = document.getElementById("senha").value.trim();
+
+
+
+    if(!nome || !email || !senha){
+
+        alert("Preencha todos os campos!");
+
+        return;
+
+    }
+
+
+
+    const usuario = {
+
+        nome: nome,
+
+        email: email,
+
+        senha: senha
+
+    };
+
+
+
+    try {
+
+
+        const res = await fetch(DB_URL + "/usuarios.json", {
+
+
+            method:"POST",
+
+
+            headers:{
+
+                "Content-Type":"application/json"
+
+            },
+
+
+            body: JSON.stringify(usuario)
+
+
+        });
+
+
+
+
+        if(res.ok){
+
+
+
+            // salva usuário completo
+
+            localStorage.setItem(
+
+                "usuarioLogado",
+
+                JSON.stringify(usuario)
+
+            );
+
+
+
+            // salva email para verificar banimento
+
+            localStorage.setItem(
+
+                "email",
+
+                email
+
+            );
+
+
+
+            alert("Cadastro realizado com sucesso!");
+
+
+
+            setTimeout(() => {
+
+                window.location.href = "loja.html";
+
+            }, 500);
+
+
+
+        } else {
+
+
+            alert("Erro ao cadastrar");
+
+
+        }
+
+
+
+
+    } catch(e){
+
+
+        console.log(e);
+
+        alert("Erro de conexão");
+
+
+    }
+
+
+
+}
+
+
+</script>

@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Regras da Loja - Minha Loja Apps</title>
+
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',Arial,sans-serif;
+}
+
+
+body{
+
+background:
+linear-gradient(135deg,#001b4d,#0066ff,#00c6ff);
+
+min-height:100vh;
+
+color:white;
+
+}
+
+
+header{
+
+text-align:center;
+
+padding:40px 20px;
+
+background:rgba(0,0,0,.25);
+
+backdrop-filter:blur(15px);
+
+}
+
+
+header h1{
+
+font-size:45px;
+
+color:#00eaff;
+
+text-shadow:0 0 15px #00eaff;
+
+}
+
+
+header p{
+
+font-size:20px;
+
+margin-top:15px;
+
+}
+
+
+
+.status{
+
+margin:25px auto;
+
+width:280px;
+
+padding:12px;
+
+border-radius:30px;
+
+background:#00c853;
+
+font-weight:bold;
+
+box-shadow:0 0 25px #00c853;
+
+}
+
+
+
+.container{
+
+max-width:1100px;
+
+margin:auto;
+
+padding:30px;
+
+}
+
+
+
+.card{
+
+background:white;
+
+color:#333;
+
+padding:30px;
+
+border-radius:25px;
+
+margin-bottom:25px;
+
+box-shadow:0 15px 40px rgba(0,0,0,.35);
+
+animation:entrada .5s;
+
+}
+
+
+
+@keyframes entrada{
+
+from{
+
+opacity:0;
+
+transform:translateY(30px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+
+
+.card h2{
+
+color:#0066ff;
+
+font-size:28px;
+
+margin-bottom:15px;
+
+}
+
+
+
+.card p{
+
+font-size:18px;
+
+line-height:1.7;
+
+}
+
+
+
+.info{
+
+display:flex;
+
+gap:20px;
+
+flex-wrap:wrap;
+
+}
+
+
+
+.box{
+
+flex:1;
+
+min-width:220px;
+
+background:#eef7ff;
+
+padding:20px;
+
+border-radius:15px;
+
+border:2px solid #d5eaff;
+
+}
+
+
+
+button,
+.botao-voltar{
+
+
+display:inline-block;
+
+margin-top:25px;
+
+padding:16px 35px;
+
+border-radius:30px;
+
+font-size:18px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+text-decoration:none;
+
+border:none;
+
+transition:.3s;
+
+}
+
+
+
+button{
+
+background:#0066ff;
+
+color:white;
+
+}
+
+
+
+button:hover{
+
+background:#00bfff;
+
+transform:scale(1.05);
+
+}
+
+
+
+.botao-voltar{
+
+background:#003cff;
+
+color:white;
+
+margin-left:15px;
+
+}
+
+
+
+.botao-voltar:hover{
+
+background:#00eaff;
+
+color:#001b4d;
+
+transform:scale(1.05);
+
+}
+
+
+
+.carregando{
+
+text-align:center;
+
+font-size:22px;
+
+}
+
+
+
+footer{
+
+text-align:center;
+
+padding:30px;
+
+background:rgba(0,0,0,.3);
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>📱 Minha Loja Apps</h1>
+
+<p>
+Regras oficiais da plataforma de venda de aplicativos
+</p>
+
+
+<div class="status">
+
+🟢 Loja Online
+
+</div>
+
+
+</header>
+
+
+
+<div class="container" id="conteudo">
+
+
+<div class="card carregando">
+
+<h2>Conectando...</h2>
+
+<p>
+
+Carregando regras da loja.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+
+<footer>
+
+© 2026 Minha Loja Apps - Plataforma Digital
+
+</footer>
+
+
+
+
+
+<script type="module">
+
+
+import { initializeApp }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+getDatabase,
+ref,
+onValue,
+set,
+get
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+
+
+const firebaseConfig={
+
+
+databaseURL:
+
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app"
+
+
+};
+
+
+
+const app=initializeApp(firebaseConfig);
+
+
+const db=getDatabase(app);
+
+
+
+
+
+const regrasRef=ref(db,"config/regras");
+
+
+
+
+
+onValue(regrasRef,(snapshot)=>{
+
+
+const dados=snapshot.val();
+
+
+
+document.getElementById("conteudo").innerHTML=`
+
+
+
+<div class="card">
+
+<h2>📋 Termos da Plataforma</h2>
+
+<p>
+
+${dados?.sobre || 
+"Minha Loja é uma plataforma para venda de aplicativos, sistemas e produtos digitais."}
+
+</p>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>👨‍💻 Regras para Vendedores</h2>
+
+<p>
+
+${dados?.vendedores ||
+
+"O vendedor deve publicar somente aplicativos próprios ou autorizados. Aplicativos maliciosos ou ilegais serão removidos."}
+
+</p>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>🛒 Regras para Compradores</h2>
+
+<p>
+
+${dados?.compradores ||
+
+"O comprador deve utilizar os aplicativos respeitando as licenças e condições de uso."}
+
+</p>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>💳 Pagamentos</h2>
+
+<p>
+
+${dados?.pagamentos ||
+
+"Os pagamentos são processados por sistemas seguros e confiáveis."}
+
+</p>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>🔐 Segurança</h2>
+
+<p>
+
+${dados?.seguranca ||
+
+"A plataforma monitora aplicativos publicados para manter um ambiente seguro."}
+
+</p>
+
+</div>
+
+
+
+
+
+
+<div class="card">
+
+
+<h2>📊 Informações da Loja</h2>
+
+
+<div class="info">
+
+
+<div class="box">
+
+<b>Versão dos Termos</b>
+
+<br><br>
+
+${dados?.versao || "1.0"}
+
+</div>
+
+
+
+<div class="box">
+
+<b>Última Atualização</b>
+
+<br><br>
+
+${dados?.data || "2026"}
+
+</div>
+
+
+
+<div class="box">
+
+<b>Total de Aceites</b>
+
+<br><br>
+
+<span id="aceites">
+
+0
+
+</span>
+
+usuários
+
+</div>
+
+
+</div>
+
+
+
+<br>
+
+
+<button onclick="aceitarRegras()">
+
+✅ Aceitar Regras
+
+</button>
+
+
+
+<a href="loja.html" class="botao-voltar">
+
+⬅ Voltar para Loja
+
+</a>
+
+
+
+</div>
+
+
+`;
+
+
+
+contarAceites();
+
+
+});
+
+
+
+
+
+
+
+window.aceitarRegras=function(){
+
+
+let usuario="usuario_"+Date.now();
+
+
+
+set(ref(db,"aceites/"+usuario),{
+
+
+aceitou:true,
+
+data:new Date().toLocaleString()
+
+
+});
+
+
+alert("✅ Regras aceitas com sucesso!");
+
+
+
+}
+
+
+
+
+
+
+
+function contarAceites(){
+
+
+get(ref(db,"aceites"))
+
+.then((snapshot)=>{
+
+
+if(snapshot.exists()){
+
+
+document.getElementById("aceites").innerHTML=
+
+Object.keys(snapshot.val()).length;
+
+
+}
+
+
+});
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
