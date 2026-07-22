@@ -8,7 +8,6 @@
 
 <title>Produto Aplicativo</title>
 
-
 <style>
 
 body{
@@ -17,7 +16,6 @@ background:#f4f4f4;
 margin:0;
 }
 
-
 header{
 background:#111;
 color:white;
@@ -25,69 +23,43 @@ padding:20px;
 text-align:center;
 }
 
-
 .container{
-
 max-width:900px;
 margin:30px auto;
 background:white;
 padding:30px;
 border-radius:15px;
-
 }
 
-
-
 .produto{
-
 display:flex;
 gap:30px;
 flex-wrap:wrap;
-
 }
 
-
-
 .imagem img{
-
 width:300px;
 height:300px;
 object-fit:cover;
 border-radius:20px;
-
 }
-
-
 
 .info{
-
 flex:1;
-
 }
-
-
 
 h1{
-
 font-size:32px;
-
 }
 
-
-
 .preco{
-
 font-size:30px;
 color:#009900;
 font-weight:bold;
 margin:20px 0;
-
 }
 
-
-
 button{
-
 width:100%;
 padding:15px;
 border:0;
@@ -95,39 +67,44 @@ border-radius:10px;
 font-size:18px;
 cursor:pointer;
 margin-top:10px;
-
 }
-
-
 
 .comprar{
-
 background:#00a650;
 color:white;
-
 }
-
-
 
 .carrinho{
-
 background:#3483fa;
 color:white;
-
 }
-
-
 
 li{
-
 margin:10px;
+}
+
+
+/* VIDEO */
+
+.video{
+
+margin-top:40px;
+background:#eee;
+padding:20px;
+border-radius:15px;
 
 }
 
 
+.video video{
 
-/* ESTRELAS */
+width:100%;
+border-radius:15px;
 
+}
+
+
+/* AVALIAÇÃO */
 
 .avaliacao{
 
@@ -138,8 +115,6 @@ border-radius:15px;
 
 }
 
-
-
 .estrela{
 
 font-size:45px;
@@ -148,15 +123,11 @@ color:#ccc;
 
 }
 
-
-
 .estrela.ativa{
 
 color:#ffc107;
 
 }
-
-
 
 #media{
 
@@ -166,10 +137,59 @@ font-size:20px;
 
 
 
+/* COMENTARIOS */
+
+
+.comentarios{
+
+margin-top:40px;
+background:#eee;
+padding:20px;
+border-radius:15px;
+
+}
+
+
+.comentarios input{
+
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+
+}
+
+
+.comentarios button{
+
+background:#111;
+color:white;
+
+}
+
+
+
+.comentario{
+
+background:white;
+padding:15px;
+margin-top:10px;
+border-radius:10px;
+
+}
+
+
+.comentario strong{
+
+color:#009900;
+
+}
+
+
 </style>
 
 </head>
-
 
 
 <body>
@@ -180,7 +200,6 @@ font-size:20px;
 <h2>📱 Minha Loja de Aplicativos</h2>
 
 </header>
-
 
 
 
@@ -198,7 +217,6 @@ font-size:20px;
 
 
 
-
 <div class="info">
 
 
@@ -209,16 +227,12 @@ Carregando...
 </h1>
 
 
-<p id="descricao"></p>
-
-
 
 <div class="preco">
 
 R$ <span id="preco"></span>
 
 </div>
-
 
 
 
@@ -237,13 +251,10 @@ Comprar agora
 </button>
 
 
-
 </div>
 
 
 </div>
-
-
 
 
 
@@ -256,13 +267,33 @@ Comprar agora
 
 
 
+<!-- VIDEO -->
+
+<div class="video">
+
+
+<h2>🎥 Demonstração do aplicativo</h2>
+
+
+<video id="videoDemo" controls>
+
+<source src="video.mp4" type="video/mp4">
+
+Seu navegador não suporta vídeo.
+
+</video>
+
+
+</div>
+
+
+
 
 
 <div class="avaliacao">
 
 
 <h2>⭐ Avaliação do aplicativo</h2>
-
 
 
 <div>
@@ -290,15 +321,48 @@ Nenhuma avaliação ainda
 
 
 
+
+
+<!-- COMENTARIOS -->
+
+
+<div class="comentarios">
+
+
+<h2>💬 Comentários em tempo real</h2>
+
+
+<input id="nomeComentario" placeholder="Seu nome">
+
+
+<input id="textoComentario" placeholder="Digite seu comentário">
+
+
+<button onclick="enviarComentario()">
+
+Enviar comentário
+
+</button>
+
+
+
+<div id="listaComentarios">
+
+</div>
+
+
 </div>
 
 
 
 
+</div>
+
 
 
 
 <script type="module">
+
 
 import { initializeApp } 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -315,8 +379,6 @@ set
 }
 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-
 
 
 
@@ -338,13 +400,16 @@ const db = getDatabase(app);
 
 
 
-// PEGAR ID DO PRODUTO
+// ID DO PRODUTO
+
 
 const url = new URLSearchParams(window.location.search);
 
 const id = url.get("id");
 
 
+
+let produtoAtual;
 
 
 
@@ -356,30 +421,22 @@ const produtoRef = ref(db,"produtos/"+id);
 
 
 
-let produtoAtual;
-
-
-
 onValue(produtoRef,(snapshot)=>{
 
 
 const produto=snapshot.val();
 
 
+
 if(produto){
 
 
-produtoAtual = produto;
+produtoAtual=produto;
 
 
 
 document.getElementById("nome").innerHTML =
 produto.nome || "Aplicativo";
-
-
-
-document.getElementById("descricao").innerHTML =
-produto.descricao || "";
 
 
 
@@ -392,6 +449,16 @@ document.getElementById("imagem").src =
 produto.imagem || "app.jpg";
 
 
+
+// VIDEO PELO FIREBASE
+
+
+if(produto.video){
+
+document.getElementById("videoDemo").src =
+produto.video;
+
+}
 
 
 
@@ -414,21 +481,13 @@ lista += "<li>✔ "+r+"</li>";
 }
 
 
-
-document.getElementById("recursos").innerHTML = lista;
-
+document.getElementById("recursos").innerHTML=lista;
 
 
 }
 
 
-
 });
-
-
-
-
-
 
 
 
@@ -440,9 +499,7 @@ document.getElementById("recursos").innerHTML = lista;
 window.comprar=function(){
 
 
-window.location.href =
-
-"pagina de pagamento.html?id="+id;
+window.location.href="pagina de pagamento.html?id="+id;
 
 
 };
@@ -451,34 +508,22 @@ window.location.href =
 
 
 
-
-
-
-
-// ADICIONAR AO CARRINHO
+// CARRINHO
 
 
 window.carrinho=function(){
 
 
-
-let produto = {
+let produto={
 
 
 id:id,
 
-
 nome:produtoAtual.nome,
-
-
-descricao:produtoAtual.descricao,
-
 
 preco:Number(produtoAtual.preco),
 
-
 imagem:produtoAtual.imagem,
-
 
 data:Date.now()
 
@@ -487,78 +532,11 @@ data:Date.now()
 
 
 
-
-
-// FIREBASE
-
-
-const carrinhoRef = ref(
-
-db,
-
-"carrinhos/cliente1"
-
-);
+const novo=push(ref(db,"carrinhos/cliente1"));
 
 
 
-
-const novoProduto = push(carrinhoRef);
-
-
-
-set(novoProduto,produto)
-
-.then(()=>{
-
-
-
-
-
-// LOCAL STORAGE
-
-
-let carrinhoLocal = JSON.parse(
-
-localStorage.getItem("carrinho")
-
-) || [];
-
-
-
-
-
-
-// impedir duplicado
-
-
-let existe = carrinhoLocal.find(
-
-(p)=>p.id == produto.id
-
-);
-
-
-
-
-
-if(!existe){
-
-
-carrinhoLocal.push(produto);
-
-
-localStorage.setItem(
-
-"carrinho",
-
-JSON.stringify(carrinhoLocal)
-
-);
-
-
-}
-
+set(novo,produto);
 
 
 
@@ -566,27 +544,7 @@ alert("✅ Aplicativo adicionado ao carrinho!");
 
 
 
-
-
-})
-
-.catch((erro)=>{
-
-
-console.log(erro);
-
-
-alert("❌ Erro ao adicionar");
-
-
-});
-
-
-
 };
-
-
-
 
 
 
@@ -596,7 +554,7 @@ alert("❌ Erro ao adicionar");
 // ESTRELAS
 
 
-const estrelas = document.querySelectorAll(".estrela");
+const estrelas=document.querySelectorAll(".estrela");
 
 
 
@@ -613,15 +571,13 @@ let nota=index+1;
 estrelas.forEach((e,i)=>{
 
 
-if(i < nota){
+if(i<nota)
 
 e.classList.add("ativa");
 
-}else{
+else
 
 e.classList.remove("ativa");
-
-}
 
 
 });
@@ -635,10 +591,7 @@ salvarNota(nota);
 }
 
 
-
 });
-
-
 
 
 
@@ -647,24 +600,15 @@ salvarNota(nota);
 function salvarNota(valor){
 
 
+const nova=push(
 
-const caminho = ref(
-
-db,
-
-"produtos/"+id+"/avaliacoes"
+ref(db,"produtos/"+id+"/avaliacoes")
 
 );
 
 
 
-
-
-const novaNota = push(caminho);
-
-
-
-set(novaNota,{
+set(nova,{
 
 nota:valor,
 
@@ -673,33 +617,17 @@ data:Date.now()
 });
 
 
-
 }
 
 
 
 
 
+onValue(
 
+ref(db,"produtos/"+id+"/avaliacoes"),
 
-
-
-// MOSTRAR MÉDIA
-
-
-const notasRef = ref(
-
-db,
-
-"produtos/"+id+"/avaliacoes"
-
-);
-
-
-
-
-
-onValue(notasRef,(snapshot)=>{
+(snapshot)=>{
 
 
 let soma=0;
@@ -711,7 +639,7 @@ let total=0;
 snapshot.forEach((item)=>{
 
 
-soma += Number(item.val().nota);
+soma+=Number(item.val().nota);
 
 total++;
 
@@ -720,19 +648,16 @@ total++;
 
 
 
+if(total){
 
 
-if(total>0){
+document.getElementById("media").innerHTML=
 
+"⭐ Média: "+
 
-document.getElementById("media").innerHTML =
+(soma/total).toFixed(1)+
 
-
-"⭐ Média: "
-
-+(soma/total).toFixed(1)
-
-+" de 5 ("+total+" avaliações)";
+" de 5 ("+total+" avaliações)";
 
 
 }
@@ -743,4 +668,107 @@ document.getElementById("media").innerHTML =
 
 
 
+
+
+
+
+// COMENTARIOS TEMPO REAL
+
+
+
+window.enviarComentario=function(){
+
+
+let nome=document.getElementById("nomeComentario").value;
+
+let texto=document.getElementById("textoComentario").value;
+
+
+
+if(!nome || !texto){
+
+alert("Preencha os campos");
+
+return;
+
+}
+
+
+
+const novo=push(
+
+ref(db,"produtos/"+id+"/comentarios")
+
+);
+
+
+
+set(novo,{
+
+nome:nome,
+
+texto:texto,
+
+data:Date.now()
+
+});
+
+
+
+document.getElementById("textoComentario").value="";
+
+
+};
+
+
+
+
+
+
+onValue(
+
+ref(db,"produtos/"+id+"/comentarios"),
+
+(snapshot)=>{
+
+
+let lista="";
+
+
+
+snapshot.forEach((item)=>{
+
+
+let c=item.val();
+
+
+
+lista+=`
+
+<div class="comentario">
+
+<strong>${c.nome}</strong>
+
+<p>${c.texto}</p>
+
+</div>
+
+`;
+
+
+});
+
+
+
+document.getElementById("listaComentarios").innerHTML=lista;
+
+
+});
+
+
+
 </script>
+
+
+</body>
+</html>
