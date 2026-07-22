@@ -242,65 +242,37 @@ border-bottom:1px solid #ddd;
 
 <body>
 
-
-
 <!-- MENU -->
 
-
 <div class="sidebar">
-
 
 <div class="logo">
 🚀 App Seller
 </div>
 
-
 <div class="menu">
-
 
 <a onclick="page('dashboard')">
 🏠 Dashboard
 </a>
 
-
 <a onclick="page('produto')">
 📱 Cadastrar Aplicativo
 </a>
-
-
 
 <a onclick="page('meusapps')">
 📦 Meus Aplicativos
 </a>
 
-
-
 <a onclick="page('vendas')">
 📊 Relatório de Vendas
 </a>
-
-
 
 <a onclick="page('vitrine')">
 🛒 Vitrine
 </a>
 
-
-
-<a onclick="page('financeiro')">
-💰 Financeiro
-</a>
-
-
-
-<a onclick="page('config')">
-⚙ Configurações
-</a>
-
-
-
 </div>
-
 
 </div>
 
@@ -917,6 +889,7 @@ let download =
 document.getElementById("downloadApp").value;
 
 
+
 // PEGAR APK
 
 let arquivoAPK =
@@ -934,9 +907,17 @@ nomeAPK = arquivoAPK.name;
 
 
 
-// ID DO VENDEDOR
+// DADOS DO VENDEDOR LOGADO
 
 let idVendedor = usuario ? usuario.uid : "sem-vendedor";
+
+
+let nomeVendedor = usuario ? usuario.nome : "Vendedor";
+
+
+let emailVendedor = usuario ? usuario.email : "";
+
+
 
 
 
@@ -944,9 +925,13 @@ let idVendedor = usuario ? usuario.uid : "sem-vendedor";
 
 let porcentagemTaxa = 10;
 
+
 let taxa = preco * porcentagemTaxa / 100;
 
+
 let vendedorRecebe = preco - taxa;
+
+
 
 
 
@@ -956,7 +941,9 @@ let novoApp =
 push(ref(db,"aplicativos"));
 
 
+
 set(novoApp,{
+
 
 nome:nome,
 
@@ -983,10 +970,20 @@ status:"Publicado",
 data:new Date().toLocaleDateString(),
 
 
-// ID DO VENDEDOR DONO DO APP
-vendedorId:idVendedor
+
+// DONO DO APP
+
+vendedorId:idVendedor,
+
+vendedorNome:nomeVendedor,
+
+vendedorEmail:emailVendedor
+
 
 });
+
+
+
 
 
 
@@ -996,7 +993,9 @@ let novoProduto =
 push(ref(db,"produtos"));
 
 
+
 set(novoProduto,{
+
 
 nome:nome,
 
@@ -1024,26 +1023,50 @@ status:"Disponível",
 
 data:new Date().toLocaleDateString(),
 
+
+
+// DADOS DO VENDEDOR
+
 vendedor:"Vendedor",
 
+vendedorId:idVendedor,
 
-// ID DO VENDEDOR DONO DO PRODUTO
-vendedorId:idVendedor
+vendedorNome:nomeVendedor,
+
+vendedorEmail:emailVendedor
+
 
 });
 
 
 
+
+
 alert(
+
 `🚀 Aplicativo publicado!
 
-Preço: R$ ${preco.toFixed(2)}
-Taxa da loja: R$ ${taxa.toFixed(2)}
-Você receberá: R$ ${vendedorRecebe.toFixed(2)}`
+
+📱 Aplicativo: ${nome}
+
+
+💰 Preço: R$ ${preco.toFixed(2)}
+
+
+🏪 Taxa da loja: R$ ${taxa.toFixed(2)}
+
+
+👤 Vendedor: ${nomeVendedor}
+
+
+💵 Você receberá: R$ ${vendedorRecebe.toFixed(2)}`
+
 );
 
 
+
 }
+
 // GRÁFICO DE VENDAS REAL DO FIREBASE
 
 
