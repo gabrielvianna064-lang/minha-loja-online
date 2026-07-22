@@ -134,6 +134,18 @@ app.post("/criar-pix", async (req, res) => {
 
 });
 
+// API da Central do Vendedor
+app.get("/api/painel", (req, res) => {
+
+    res.json({
+        downloads: 0,
+        faturamento: 0,
+        aplicativos: 0,
+        avaliacao: 0
+    });
+
+});
+
 // Cadastro de vendedor
 app.get("/cadastro-vendedor", (req, res) => {
     res.sendFile(__dirname + "/central do vendedor.html");
