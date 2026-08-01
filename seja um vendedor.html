@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Seja um Vendedor</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f5f5;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.container{
+    background:white;
+    width:400px;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 0 15px #ccc;
+}
+
+h2{
+    text-align:center;
+}
+
+.btn-voltar{
+    width:100%;
+    margin-top:10px;
+    margin-bottom:15px;
+    padding:12px;
+    background:#6c757d;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.btn-voltar:hover{
+    background:#5a6268;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-top:15px;
+}
+
+input, select{
+    width:100%;
+    padding:12px;
+    margin-top:5px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+button{
+    width:100%;
+    margin-top:25px;
+    padding:14px;
+    background:#007bff;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#0056b3;
+}
+
+.info{
+    font-size:14px;
+    color:#555;
+    margin-top:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Seja um Vendedor</h2>
+
+<button class="btn-voltar" onclick="history.back()">
+← Voltar
+</button>
+
+<label>Tipo de vendedor</label>
+
+<select id="tipo">
+
+<option value="PF">
+Pessoa Física (CPF)
+</option>
+
+<option value="CNPJ">
+Pessoa Jurídica (CNPJ)
+</option>
+
+</select>
+
+<label>CPF ou CNPJ</label>
+
+<input
+id="documento"
+placeholder="Digite CPF ou CNPJ">
+
+<div class="info">
+
+Identifica quem é o responsável pelas vendas e permite a emissão de notas fiscais ou declarações de conteúdo.
+
+</div>
+
+<label>Conta Bancária</label>
+
+<input
+id="conta"
+placeholder="Banco, agência e conta">
+
+<button id="btnCadastro">
+
+Continuar Cadastro
+
+</button>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+
+getDatabase,
+
+ref,
+
+push,
+
+set,
+
+query,
+
+orderByChild,
+
+equalTo,
+
+get
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// CONFIGURAÇÃO FIREBASE
+
+const firebaseConfig = {
+
+databaseURL:
+
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app"
+
+};
+
+// INICIAR FIREBASE
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+document
+.getElementById("btnCadastro")
+.addEventListener("click", async function(){
+
+const tipo =
+document.getElementById("tipo").value;
+
+const documento =
+document.getElementById("documento").value.trim();
+
+const conta =
+document.getElementById("conta").value.trim();
+
+if(!documento || !conta){
+
+alert("Preencha CPF/CNPJ e Conta Bancária!");
+
+return;
+
+}
+
+try{
+
+const vendedores = ref(db,"vendedores");
+
+const verificar = query(
+
+vendedores,
+
+orderByChild("documento"),
+
+equalTo(documento)
+
+);
+
+const resultado = await get(verificar);
+
+if(resultado.exists()){
+
+alert("Este CPF ou CNPJ já está cadastrado como vendedor!");
+
+return;
+
+}
+
+localStorage.setItem(
+
+"dadosVendedor",
+
+JSON.stringify({
+
+tipo:tipo,
+
+documento:documento,
+
+conta:conta
+
+})
+
+);
+
+const novoVendedor =
+
+push(ref(db,"vendedores"));
+
+await set(novoVendedor,{
+
+tipo: tipo,
+
+documento: documento,
+
+conta: conta,
+
+dataCadastro:
+
+new Date().toLocaleString("pt-BR")
+
+});
+
+alert("Cadastro de vendedor concluído com sucesso!");
+
+window.location.href = "central do vendedor.html";
+
+}catch(error){
+
+console.log(error);
+
+alert("Erro ao cadastrar: " + error.message);
+
+}
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Meu Carrinho</title>
+
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+margin:0;
+}
+
+
+header{
+background:#111;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+
+.container{
+
+max-width:900px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:15px;
+
+}
+
+
+.produto{
+
+display:flex;
+align-items:center;
+gap:20px;
+background:#fafafa;
+padding:15px;
+margin-bottom:15px;
+border-radius:15px;
+box-shadow:0 2px 5px #ddd;
+
+}
+
+
+.produto img{
+
+width:100px;
+height:100px;
+object-fit:cover;
+border-radius:12px;
+
+}
+
+
+.info{
+
+flex:1;
+
+}
+
+
+.info h2{
+
+cursor:pointer;
+margin:0 0 10px;
+
+}
+
+
+.info p{
+
+color:#555;
+
+}
+
+
+.preco{
+
+font-size:20px;
+font-weight:bold;
+color:#009900;
+
+}
+
+
+
+button{
+
+border:0;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+
+}
+
+
+
+.remover{
+
+background:red;
+color:white;
+
+}
+
+
+
+.voltar{
+
+background:#0066ff;
+color:white;
+width:100%;
+margin-top:20px;
+
+}
+
+
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<header>
+
+<h2>🛒 Meu Carrinho</h2>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div id="lista">
+
+Carregando produtos...
+
+</div>
+
+
+
+<button class="voltar" onclick="voltarLoja()">
+
+⬅ Voltar para loja
+
+</button>
+
+
+</div>
+
+
+
+
+
+<script type="module">
+
+
+import { initializeApp }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+getDatabase,
+ref,
+onValue,
+remove
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+const firebaseConfig = {
+
+databaseURL:
+
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+
+
+const db = getDatabase(app);
+
+
+
+const lista=document.getElementById("lista");
+
+
+
+const carrinhoRef=
+
+ref(db,"carrinhos/cliente1");
+
+
+
+
+onValue(carrinhoRef,(snapshot)=>{
+
+
+lista.innerHTML="";
+
+
+
+if(!snapshot.exists()){
+
+
+lista.innerHTML=
+
+"<h2>Carrinho vazio</h2>";
+
+return;
+
+}
+
+
+
+
+snapshot.forEach((item)=>{
+
+
+let produto=item.val();
+
+let id=item.key;
+
+
+
+lista.innerHTML += `
+
+
+<div class="produto">
+
+
+<img src="${produto.imagem || 'app.jpg'}">
+
+
+<div class="info">
+
+
+<h2 onclick="abrirProduto('${produto.id}')">
+
+${produto.nome || "Aplicativo"}
+
+</h2>
+
+
+<p>
+
+Vendido por:
+${produto.vendedorNome || "Minha Loja"}
+
+</p>
+
+
+<div class="preco">
+
+R$ ${Number(produto.preco).toFixed(2)}
+
+</div>
+
+
+</div>
+
+
+
+<button class="remover"
+
+onclick="remover('${id}')">
+
+Remover
+
+</button>
+
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+});
+
+
+
+
+
+
+
+// ABRIR PRODUTO
+
+
+window.abrirProduto=function(idProduto){
+
+
+window.location.href=
+
+"produto.html?id="+idProduto;
+
+
+};
+
+
+
+
+
+
+// REMOVER
+
+
+window.remover=function(id){
+
+
+remove(
+
+ref(db,"carrinhos/cliente1/"+id)
+
+);
+
+
+};
+
+
+
+
+
+
+// VOLTAR LOJA
+
+
+window.voltarLoja=function(){
+
+
+window.location.href="loja.html";
+
+
+};
+
+
+
+</script>
+
+
+</body>
+
+</html>

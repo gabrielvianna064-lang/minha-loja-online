@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - Minha Loja</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f6fb;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.login{
+background:#fff;
+padding:30px;
+border-radius:15px;
+box-shadow:0 5px 20px rgba(0,0,0,.2);
+width:350px;
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+color:#0d6efd;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:1px solid #ccc;
+border-radius:10px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+background:#0d6efd;
+color:#fff;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0953c9;
+}
+
+a{
+display:block;
+text-align:center;
+margin-top:15px;
+text-decoration:none;
+color:#0d6efd;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login">
+
+<h1>Entrar</h1>
+
+<input
+type="email"
+id="email"
+placeholder="Seu e-mail">
+
+<input
+type="password"
+id="senha"
+placeholder="Sua senha">
+
+<button onclick="login()">
+Entrar
+</button>
+
+<a href="cadrastro na loja.html">
+Criar conta
+</a>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+
+const firebaseConfig={
+
+apiKey:"AIzaSyAMG8workhkRJapQm1AHSMOSIPOnSWltpw",
+
+authDomain:"minha-loja-5477a.firebaseapp.com",
+
+databaseURL:"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"minha-loja-5477a",
+
+storageBucket:"minha-loja-5477a.firebasestorage.app",
+
+messagingSenderId:"680448342361",
+
+appId:"1:680448342361:web:e35226b350ac4504d6f448"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+
+
+window.login=function(){
+
+
+let email = document.getElementById("email").value.trim();
+
+let senha = document.getElementById("senha").value.trim();
+
+
+
+if(!email || !senha){
+
+alert("Preencha todos os campos.");
+
+return;
+
+}
+
+
+
+signInWithEmailAndPassword(auth,email,senha)
+
+.then((resultado)=>{
+
+
+// salva usuário logado
+
+localStorage.setItem("usuarioLogado","sim");
+
+
+// salva UID
+
+localStorage.setItem(
+"uidUsuario",
+resultado.user.uid
+);
+
+
+// vai para loja
+
+window.location.href="loja.html";
+
+
+})
+
+
+.catch((erro)=>{
+
+
+console.log("Código do erro:", erro.code);
+
+console.log("Mensagem:", erro.message);
+
+
+
+if(erro.code === "auth/invalid-credential"){
+
+alert("E-mail ou senha incorretos.");
+
+}
+
+else if(erro.code === "auth/user-not-found"){
+
+alert("Usuário não encontrado.");
+
+}
+
+else if(erro.code === "auth/wrong-password"){
+
+alert("Senha incorreta.");
+
+}
+
+else{
+
+alert("Erro: "+erro.message);
+
+}
+
+
+});
+
+
+}
+
+
+</script>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Configurações da Loja</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f2f2f2;
+}
+
+header{
+    background:#111;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.container{
+    max-width:900px;
+    margin:20px auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+}
+
+input, textarea{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:10px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+}
+
+button{
+    padding:12px 20px;
+    border:0;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.salvar{
+    background:#008cff;
+    color:white;
+}
+
+.voltar{
+    background:#333;
+    color:white;
+    margin-bottom:15px;
+}
+
+.card{
+    background:#eee;
+    padding:15px;
+    border-radius:12px;
+    margin:10px 0;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header>
+<h1>⚙️ Configurações da Loja</h1>
+</header>
+
+
+<div class="container">
+
+
+<button class="voltar" onclick="voltar()">
+⬅️ Voltar para Loja
+</button>
+
+
+<h2>🏪 Informações da Loja</h2>
+
+
+<input id="nomeLoja" placeholder="Nome da Loja">
+
+
+<textarea id="descricao" placeholder="Descrição da Loja"></textarea>
+
+
+<input id="logo" placeholder="Link da Logo">
+
+
+<h2>📱 Configurações dos Aplicativos</h2>
+
+
+<div class="card">
+✅ Publicação de aplicativos<br>
+✅ Controle de preços<br>
+✅ Gerenciamento de downloads
+</div>
+
+
+<h2>💳 Pagamentos</h2>
+
+
+<input id="pix" placeholder="Chave Pix">
+
+
+<input id="mercadoPago" placeholder="Mercado Pago">
+
+
+<br><br>
+
+
+<button class="salvar" onclick="salvar()">
+💾 Salvar Configurações
+</button>
+
+
+<p id="status"></p>
+
+
+</div>
+
+
+
+<script type="module">
+
+import { initializeApp } from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import { 
+getDatabase,
+ref,
+set,
+get
+} from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+const firebaseConfig = {
+
+databaseURL:
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+
+
+window.salvar = async function(){
+
+
+let dados = {
+
+nome:
+document.getElementById("nomeLoja").value,
+
+
+descricao:
+document.getElementById("descricao").value,
+
+
+logo:
+document.getElementById("logo").value,
+
+
+pix:
+document.getElementById("pix").value,
+
+
+mercadoPago:
+document.getElementById("mercadoPago").value,
+
+
+data:
+new Date().toLocaleString()
+
+};
+
+
+
+await set(
+ref(db,"configuracoes/loja"),
+dados
+);
+
+
+document.getElementById("status").innerHTML =
+"✅ Configurações salvas com sucesso!";
+
+
+}
+
+
+
+async function carregar(){
+
+
+const dados =
+await get(ref(db,"configuracoes/loja"));
+
+
+if(dados.exists()){
+
+
+let loja=dados.val();
+
+
+nomeLoja.value = loja.nome || "";
+
+descricao.value = loja.descricao || "";
+
+logo.value = loja.logo || "";
+
+pix.value = loja.pix || "";
+
+mercadoPago.value = loja.mercadoPago || "";
+
+
+}
+
+
+}
+
+
+carregar();
+
+
+
+window.voltar=function(){
+
+window.location.href="loja.html";
+
+}
+
+
+</script>
+
+
+</body>
+</html>

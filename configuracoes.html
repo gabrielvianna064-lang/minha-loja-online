@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Configurações da Loja</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f2f2f2;
+}
+
+.container{
+    max-width:700px;
+    margin:30px auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+}
+
+input, textarea{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    background:#0066ff;
+    color:white;
+    padding:12px;
+    width:100%;
+    border:0;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#004ecc;
+}
+
+.card{
+    background:#eee;
+    padding:15px;
+    margin:10px 0;
+    border-radius:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+<h1>⚙️ Configurações da Loja</h1>
+
+
+<div class="card">
+
+<h3>🏪 Informações da Loja</h3>
+
+<input id="nomeLoja" placeholder="Nome da loja">
+
+<textarea id="descricao" placeholder="Descrição da loja"></textarea>
+
+<input id="logo" placeholder="Link da logo">
+
+</div>
+
+
+<div class="card">
+
+<h3>💳 Pagamentos</h3>
+
+<input id="pix" placeholder="Chave Pix">
+
+<input id="mercadoPago" placeholder="Token Mercado Pago">
+
+</div>
+
+
+<div class="card">
+
+<h3>📱 Aplicativos</h3>
+
+<input id="categoria" placeholder="Categoria dos apps">
+
+<input id="limiteApps" placeholder="Quantidade máxima de apps">
+
+</div>
+
+
+<button onclick="salvarConfiguracao()">
+💾 Salvar Configurações
+</button>
+
+
+<p id="status"></p>
+
+
+</div>
+
+
+
+<script type="module">
+
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { 
+getDatabase,
+ref,
+set,
+get
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+// Firebase da sua loja
+
+const firebaseConfig = {
+
+databaseURL:
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+
+
+window.salvarConfiguracao = async function(){
+
+
+await set(ref(db,"configuracoes"),{
+
+nomeLoja:
+document.getElementById("nomeLoja").value,
+
+descricao:
+document.getElementById("descricao").value,
+
+logo:
+document.getElementById("logo").value,
+
+pix:
+document.getElementById("pix").value,
+
+mercadoPago:
+document.getElementById("mercadoPago").value,
+
+categoria:
+document.getElementById("categoria").value,
+
+limiteApps:
+document.getElementById("limiteApps").value,
+
+
+data:
+new Date().toLocaleString()
+
+});
+
+
+document.getElementById("status").innerHTML=
+"✅ Configurações salvas no Firebase!";
+
+
+}
+
+
+
+
+// Carregar configurações salvas
+
+async function carregar(){
+
+const dados =
+await get(ref(db,"configuracoes"));
+
+
+if(dados.exists()){
+
+
+let c=dados.val();
+
+
+nomeLoja.value=c.nomeLoja || "";
+
+descricao.value=c.descricao || "";
+
+logo.value=c.logo || "";
+
+pix.value=c.pix || "";
+
+mercadoPago.value=c.mercadoPago || "";
+
+categoria.value=c.categoria || "";
+
+limiteApps.value=c.limiteApps || "";
+
+
+}
+
+
+}
+
+
+carregar();
+
+
+</script>
+
+
+</body>
+</html>

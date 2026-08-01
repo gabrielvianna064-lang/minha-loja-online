@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pagamento - Loja de Apps</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#0f172a;
+color:white;
+}
+
+.container{
+max-width:450px;
+margin:50px auto;
+background:#1e293b;
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 20px #000;
+}
+
+h1{
+text-align:center;
+color:#38bdf8;
+}
+
+.app{
+background:#334155;
+padding:15px;
+border-radius:10px;
+}
+
+img{
+width:100%;
+height:250px;
+object-fit:cover;
+border-radius:15px;
+}
+
+.preco{
+font-size:28px;
+color:#22c55e;
+font-weight:bold;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:15px;
+border:0;
+border-radius:10px;
+font-size:18px;
+cursor:pointer;
+}
+
+.pagar{
+background:#009ee3;
+color:white;
+}
+
+.info{
+text-align:center;
+margin-top:20px;
+color:#94a3b8;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1>
+🚀 Loja de Aplicativos
+</h1>
+
+
+<div class="app">
+
+
+<img id="imagem" src="app.jpg">
+
+
+<h2 id="nomeApp">
+Carregando...
+</h2>
+
+
+<p id="descricao">
+Carregando...
+</p>
+
+
+<div class="preco">
+
+R$ <span id="preco">0</span>
+
+</div>
+
+
+</div>
+
+
+
+<button class="pagar" onclick="pagar()">
+
+💳 Pagar com Mercado Pago
+
+</button>
+
+
+
+<div class="info">
+
+Pagamento seguro Mercado Pago
+
+</div>
+
+
+</div>
+
+
+
+
+
+<script type="module">
+
+
+import { initializeApp }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+getDatabase,
+ref,
+onValue
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+const firebaseConfig={
+
+databaseURL:
+
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
+};
+
+
+
+const app=initializeApp(firebaseConfig);
+
+const db=getDatabase(app);
+
+
+
+const url=new URLSearchParams(window.location.search);
+
+
+const id=url.get("id");
+
+
+let produtoAtual;
+
+
+
+onValue(ref(db,"produtos/"+id),(snapshot)=>{
+
+
+const produto=snapshot.val();
+
+
+
+if(produto){
+
+
+produtoAtual=produto;
+
+
+
+document.getElementById("nomeApp").innerHTML =
+produto.nome || "Aplicativo";
+
+
+document.getElementById("preco").innerHTML =
+produto.preco || "0";
+
+
+document.getElementById("imagem").src =
+produto.imagem || "app.jpg";
+
+
+document.getElementById("descricao").innerHTML =
+produto.descricao || "Sem descrição";
+
+
+}
+
+
+});
+
+
+
+
+
+window.pagar = async function(){
+
+
+if(!produtoAtual){
+
+alert("Produto não carregado");
+
+return;
+
+}
+
+
+
+const resposta = await fetch("/criar-pagamento",{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+produto:produtoAtual.nome,
+
+preco:Number(produtoAtual.preco)
+
+})
+
+});
+
+
+
+const dados = await resposta.json();
+
+
+
+if(dados.link){
+
+window.location.href=dados.link;
+
+}else{
+
+alert("Erro ao criar pagamento");
+
+}
+
+
+};
+
+
+
+</script>
+
+
+</body>
+
+</html>

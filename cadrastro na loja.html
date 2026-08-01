@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Cadastro da Loja</title>
+
+<style>
+
+body {
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    height:100vh;
+}
+
+
+.card {
+
+    background:white;
+
+    width:340px;
+
+    padding:25px;
+
+    border-radius:15px;
+
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+
+    text-align:center;
+
+}
+
+
+
+h2{
+
+    color:#111827;
+
+    margin-bottom:15px;
+
+}
+
+
+
+input{
+
+    width:100%;
+
+    padding:12px;
+
+    margin:8px 0;
+
+    border:1px solid #ddd;
+
+    border-radius:8px;
+
+}
+
+
+
+input:focus{
+
+    border-color:#3b82f6;
+
+    outline:none;
+
+}
+
+
+
+button{
+
+    width:100%;
+
+    padding:12px;
+
+    margin-top:10px;
+
+    background:#3b82f6;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+
+
+button:hover{
+
+    background:#2563eb;
+
+}
+
+
+
+.small{
+
+    font-size:12px;
+
+    color:gray;
+
+    margin-top:10px;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="card">
+
+
+<h2>🛒 Criar Conta na Loja</h2>
+
+
+<input 
+id="nome"
+type="text"
+placeholder="Seu nome">
+
+
+<input
+id="email"
+type="email"
+placeholder="Seu email">
+
+
+<input
+id="senha"
+type="password"
+placeholder="Sua senha">
+
+
+<button onclick="cadastrar()">
+
+Cadastrar
+
+</button>
+
+
+<div class="small">
+
+Depois do cadastro você será enviado para a loja
+
+</div>
+
+
+</div>
+
+
+
+<script type="module">
+
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import { 
+getAuth,
+createUserWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+import {
+getDatabase,
+ref,
+set
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+// Configuração Firebase
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyAMG8workhkRJapQm1AHSMOSIPOnSWltpw",
+
+authDomain: "minha-loja-5477a.firebaseapp.com",
+
+databaseURL: "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId: "minha-loja-5477a",
+
+storageBucket: "minha-loja-5477a.firebasestorage.app",
+
+messagingSenderId: "680448342361",
+
+appId: "1:680448342361:web:e35226b350ac4504d6f448",
+
+measurementId: "G-0FBN3SDTNR"
+
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+
+
+const auth = getAuth(app);
+
+
+const database = getDatabase(app);
+
+
+
+
+
+window.cadastrar = async function(){
+
+
+const nome =
+document.getElementById("nome").value.trim();
+
+
+const email =
+document.getElementById("email").value.trim();
+
+
+const senha =
+document.getElementById("senha").value.trim();
+
+
+
+if(!nome || !email || !senha){
+
+alert("Preencha todos os campos!");
+
+return;
+
+}
+
+
+
+try{
+
+
+// Cria usuário seguro no Firebase Authentication
+
+const resultado = 
+await createUserWithEmailAndPassword(
+auth,
+email,
+senha
+);
+
+
+
+const uid = resultado.user.uid;
+
+
+
+// Salva somente os dados públicos do usuário
+
+// A senha NÃO é salva no banco
+
+await set(
+ref(database,"usuarios/"+uid),
+{
+
+nome:nome,
+
+email:email,
+
+downloads:0,
+
+faturamento:0,
+
+aplicativos:0,
+
+avaliacao:0,
+
+dataCadastro:new Date().toLocaleString()
+
+}
+
+);
+
+
+
+alert("Cadastro realizado com sucesso!");
+
+
+
+window.location.href="loja.html";
+
+
+
+}catch(erro){
+
+
+console.log(erro);
+
+
+
+if(erro.code === "auth/email-already-in-use"){
+
+alert("Esse email já possui uma conta!");
+
+}
+
+else if(erro.code === "auth/weak-password"){
+
+alert("A senha precisa ter pelo menos 6 caracteres!");
+
+}
+
+else{
+
+alert(
+"Erro Firebase: " + erro.message
+);
+
+}
+
+
+
+}
+
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
