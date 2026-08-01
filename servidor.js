@@ -46,9 +46,9 @@ app.post("/criar-pagamento", async (req,res)=>{
                 ],
 
                 back_urls:{
-                    success:"https://minha-loja-online-kbe8.onrender.com/sucesso.html",
-                    failure:"https://minha-loja-online-kbe8.onrender.com/erro.html",
-                    pending:"https://minha-loja-online-kbe8.onrender.com/sucesso.html"
+                    success:"https://minha-loja-online-kbe8.onrender.com/",
+                    failure:"https://minha-loja-online-kbe8.onrender.com/",
+                    pending:"https://minha-loja-online-kbe8.onrender.com/"
                 }
 
             }
