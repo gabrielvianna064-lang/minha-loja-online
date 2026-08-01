@@ -25,16 +25,13 @@ const client = new MercadoPagoConfig({
     accessToken: process.env.MERCADO_PAGO_TOKEN
 });
 
-
 app.post("/criar-pagamento", async (req,res)=>{
 
     try {
 
         const { produto, preco } = req.body;
 
-
         const preference = new Preference(client);
-
 
         const pagamento = await preference.create({
 
@@ -43,26 +40,24 @@ app.post("/criar-pagamento", async (req,res)=>{
                 items:[
                     {
                         title: produto || "Produto da Loja",
-                        quantity:1,
-                        unit_price:Number(preco) || 50
+                        quantity: 1,
+                        unit_price: Number(preco) || 50
                     }
                 ],
 
                 back_urls:{
-                    success:"http://localhost:3000/sucesso.html",
-                    failure:"http://localhost:3000/erro.html",
-                    pending:"http://localhost:3000/sucesso.html"
+                    success:"https://minha-loja-online-kbe8.onrender.com/sucesso.html",
+                    failure:"https://minha-loja-online-kbe8.onrender.com/erro.html",
+                    pending:"https://minha-loja-online-kbe8.onrender.com/sucesso.html"
                 }
 
             }
 
         });
 
-
         res.json({
             link: pagamento.init_point
         });
-
 
     } catch(erro){
 
@@ -75,8 +70,6 @@ app.post("/criar-pagamento", async (req,res)=>{
     }
 
 });
-
-
 // ===============================
 // CADASTRO DE VENDEDOR
 // ===============================
