@@ -90,11 +90,6 @@ background:#111;
 color:white;
 }
 
-.compartilhar{
-background:#777;
-color:white;
-}
-
 .comprar{
 background:#00a650;
 color:white;
@@ -105,13 +100,20 @@ background:#3483fa;
 color:white;
 }
 
+.compartilhar{
+background:#2563eb;
+color:white;
+}
+
+.compartilhar:hover{
+background:#1d4ed8;
+}
+
 </style>
 
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -119,13 +121,9 @@ color:white;
 
 </header>
 
-
-
 <div class="container">
 
-
 <div class="produto">
-
 
 <div class="imagem">
 
@@ -133,10 +131,7 @@ color:white;
 
 </div>
 
-
-
 <div class="info">
-
 
 <h1 id="nome">
 
@@ -144,15 +139,11 @@ Carregando...
 
 </h1>
 
-
-
 <div class="preco">
 
 R$ <span id="preco"></span>
 
 </div>
-
-
 
 <button class="voltar" onclick="voltar()">
 
@@ -160,23 +151,11 @@ R$ <span id="preco"></span>
 
 </button>
 
-
-
-<button class="compartilhar" onclick="compartilharProduto()">
-
-🔗 Compartilhar Produto
-
-</button>
-
-
-
 <button class="comprar" onclick="comprar()">
 
 💰 Comprar agora
 
 </button>
-
-
 
 <button class="carrinho" onclick="carrinho()">
 
@@ -184,19 +163,17 @@ R$ <span id="preco"></span>
 
 </button>
 
+<button class="compartilhar" onclick="compartilharProduto()">
 
+📤 Compartilhar Produto
+
+</button>
 
 </div>
 
-
 </div>
-
-
-
-
 
 <div class="descricao">
-
 
 <h2>
 
@@ -204,136 +181,70 @@ R$ <span id="preco"></span>
 
 </h2>
 
-
-
 <p id="descricao">
 
 Carregando descrição...
 
 </p>
 
-
 </div>
 
-
-
 </div>
-
-
-
-
-
 
 <script type="module">
 
-
 import { initializeApp }
-
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-
-
 import {
-
 getDatabase,
 ref,
 onValue,
 push,
 set
-
 }
-
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-
-
-
 
 const firebaseConfig = {
 
-
 databaseURL:
-
 "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
-
 
 };
 
-
-
 const app = initializeApp(firebaseConfig);
-
 
 const db = getDatabase(app);
 
-
-
-
-
 const url = new URLSearchParams(window.location.search);
-
 
 const id = url.get("id");
 
-
-
 let produtoAtual;
-
-
-
-
 
 onValue(ref(db,"produtos/"+id),(snapshot)=>{
 
-
 const produto = snapshot.val();
-
-
 
 if(produto){
 
-
-
 produtoAtual = produto;
 
-
-
 document.getElementById("nome").innerHTML =
-
 produto.nome || "Aplicativo";
 
-
-
-
 document.getElementById("preco").innerHTML =
-
 produto.preco || "0";
 
-
-
-
 document.getElementById("imagem").src =
-
 produto.imagem || "app.jpg";
 
-
-
-
 document.getElementById("descricao").innerHTML =
-
 produto.descricao || "Sem descrição disponível.";
-
-
 
 }
 
-
-
 });
-
-
-
-
 
 window.voltar=function(){
 
@@ -341,212 +252,88 @@ history.back();
 
 };
 
-
-
-
-
-
-
 window.comprar=function(){
-
-
 
 if(!produtoAtual){
 
-
 alert("Produto carregando...");
-
 
 return;
 
-
 }
 
-
-
 window.location.href =
-
 "pagina de pagamento.html?id="+id;
 
-
-
 };
-
-
-
-
-
-
-
 
 window.carrinho=function(){
 
-
-
 if(!produtoAtual){
-
 
 alert("Produto carregando...");
 
-
 return;
 
-
 }
-
-
-
 
 const produto = {
 
-
-
 id:id,
-
 
 nome:produtoAtual.nome,
 
-
 preco:Number(produtoAtual.preco),
-
 
 imagem:produtoAtual.imagem,
 
-
 descricao:produtoAtual.descricao || "",
-
 
 data:Date.now()
 
-
-
 };
 
-
-
-
-
-
 const novo = push(
-
 ref(db,"carrinhos/cliente1")
-
 );
-
-
-
-
 
 set(novo,produto);
 
-
-
 alert("✅ Aplicativo adicionado ao carrinho!");
-
-
 
 };
 
+window.compartilharProduto=function(){
 
+const titulo=document.getElementById("nome").innerText;
 
+const texto="Confira este aplicativo na Minha Loja de Aplicativos!";
 
-
-
-
-
-
-window.compartilharProduto = async function(){
-
-
-
-const link = window.location.href;
-
-
-
-const nome = document.getElementById("nome").innerText;
-
-
-
-
-
-const mensagem =
-
-
-
-"📱 Minha Loja de Aplicativos\n\n"+
-
-
-"🔥 Confira este produto:\n\n"+
-
-
-"📦 "+nome+
-
-
-
-"\n\nVeja aqui:\n"+
-
-
-
-link;
-
-
-
-
+const url=window.location.href;
 
 if(navigator.share){
 
+navigator.share({
 
+title:titulo,
 
-try{
+text:texto,
 
-
-
-await navigator.share({
-
-
-title:nome,
-
-
-text:mensagem,
-
-
-url:link
-
-
+url:url
 
 });
 
-
-
-}catch(e){}
-
-
-
-
-
 }else{
 
+navigator.clipboard.writeText(url);
 
-
-navigator.clipboard.writeText(mensagem);
-
-
-alert("✅ Link copiado!");
-
-
+alert("✅ Link do produto copiado para a área de transferência!");
 
 }
 
-
-
 };
 
-
-
-
-
 </script>
-
 
 </body>
 
