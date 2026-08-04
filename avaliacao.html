@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Avaliação do Produto</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+}
+
+header{
+background:#111;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+.container{
+max-width:700px;
+margin:30px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+}
+
+h1{
+text-align:center;
+}
+
+.produto{
+text-align:center;
+}
+
+.produto img{
+width:200px;
+height:200px;
+object-fit:cover;
+border-radius:20px;
+}
+
+.estrelas{
+font-size:35px;
+cursor:pointer;
+text-align:center;
+margin:20px;
+}
+
+.estrelas span{
+color:#ccc;
+}
+
+.estrelas span.ativo{
+color:#ffc107;
+}
+
+input,textarea{
+
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:16px;
+
+}
+
+button{
+
+width:100%;
+padding:15px;
+margin-top:15px;
+border:0;
+border-radius:10px;
+background:#00a650;
+color:white;
+font-size:18px;
+cursor:pointer;
+
+}
+
+
+.avaliacao{
+
+background:#eee;
+padding:15px;
+border-radius:10px;
+margin-top:15px;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h2>⭐ Avaliação do Aplicativo</h2>
+
+</header>
+
+
+
+<div class="container">
+
+
+<div class="produto">
+
+<img id="imagem" src="app.jpg">
+
+<h2 id="nome">
+Carregando...
+</h2>
+
+</div>
+
+
+
+<h2>
+Sua avaliação
+</h2>
+
+
+
+<div class="estrelas">
+
+<span onclick="nota(1)">★</span>
+<span onclick="nota(2)">★</span>
+<span onclick="nota(3)">★</span>
+<span onclick="nota(4)">★</span>
+<span onclick="nota(5)">★</span>
+
+</div>
+
+
+
+<textarea id="comentario" placeholder="Escreva sua opinião..."></textarea>
+
+
+<button onclick="enviarAvaliacao()">
+
+Enviar avaliação
+
+</button>
+
+
+
+<h2>
+Avaliações dos clientes
+</h2>
+
+
+<div id="lista">
+
+Carregando avaliações...
+
+</div>
+
+
+</div>
+
+
+
+
+<script type="module">
+
+
+import { initializeApp }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+
+import {
+
+getDatabase,
+ref,
+onValue,
+push,
+set
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+
+
+const firebaseConfig = {
+
+databaseURL:
+"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
+};
+
+
+
+
+
+const app = initializeApp(firebaseConfig);
+
+
+const db = getDatabase(app);
+
+
+
+
+
+const url = new URLSearchParams(window.location.search);
+
+
+const id = url.get("id");
+
+
+
+let avaliacaoNota = 0;
+
+let produtoAtual;
+
+
+
+
+
+// Carregar produto
+
+
+onValue(ref(db,"produtos/"+id),(snapshot)=>{
+
+
+const produto = snapshot.val();
+
+
+if(produto){
+
+
+produtoAtual = produto;
+
+
+
+document.getElementById("nome").innerHTML =
+produto.nome || "Aplicativo";
+
+
+
+document.getElementById("imagem").src =
+produto.imagem || "app.jpg";
+
+
+
+}
+
+
+});
+
+
+
+
+
+
+
+
+// Selecionar estrelas
+
+
+window.nota=function(valor){
+
+
+avaliacaoNota = valor;
+
+
+
+const estrelas =
+document.querySelectorAll(".estrelas span");
+
+
+
+estrelas.forEach((estrela,index)=>{
+
+
+if(index < valor){
+
+estrela.classList.add("ativo");
+
+}else{
+
+estrela.classList.remove("ativo");
+
+}
+
+
+});
+
+
+};
+
+
+
+
+
+
+
+
+// Enviar avaliação
+
+
+window.enviarAvaliacao=function(){
+
+
+const comentario =
+document.getElementById("comentario").value;
+
+
+
+if(avaliacaoNota == 0){
+
+
+alert("Escolha uma nota!");
+
+return;
+
+
+}
+
+
+
+if(comentario.trim()==""){
+
+
+alert("Digite um comentário!");
+
+return;
+
+
+}
+
+
+
+
+
+const novaAvaliacao = push(
+
+ref(db,"avaliacoes/"+id)
+
+);
+
+
+
+
+
+set(novaAvaliacao,{
+
+nota:Number(avaliacaoNota),
+
+comentario:comentario,
+
+data:Date.now()
+
+}).then(()=>{
+
+
+alert("✅ Avaliação enviada com sucesso!");
+
+document.getElementById("comentario").value="";
+
+
+
+}).catch((erro)=>{
+
+
+alert("Erro ao enviar avaliação: "+erro);
+
+
+});
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+// Mostrar avaliações
+
+
+onValue(ref(db,"avaliacoes/"+id),(snapshot)=>{
+
+
+const lista =
+document.getElementById("lista");
+
+
+
+if(!lista) return;
+
+
+
+lista.innerHTML="";
+
+
+
+if(!snapshot.exists()){
+
+
+lista.innerHTML =
+"Sem avaliações ainda.";
+
+
+return;
+
+
+}
+
+
+
+
+
+snapshot.forEach((item)=>{
+
+
+const dados=item.val();
+
+
+
+lista.innerHTML += `
+
+<div class="avaliacao">
+
+
+<h3>
+
+${"⭐".repeat(Number(dados.nota))}
+
+</h3>
+
+
+<p>
+
+${dados.comentario}
+
+</p>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+
+});
+
+
+
+</script>
+
+
+</body>
+
+</html>
