@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Produto Aplicativo 3</title>
+<title>Produto Aplicativo Cópia</title>
 
 <style>
 
@@ -121,6 +121,7 @@ background:#1d4ed8;
 
 </header>
 
+
 <div class="container">
 
 <div class="produto">
@@ -131,13 +132,13 @@ background:#1d4ed8;
 
 </div>
 
+
 <div class="info">
 
 <h1 id="nome">
-
 Carregando...
-
 </h1>
+
 
 <div class="preco">
 
@@ -145,56 +146,136 @@ R$ <span id="preco"></span>
 
 </div>
 
+
 <button class="voltar" onclick="voltar()">
-
 ⬅️ Voltar
-
 </button>
+
 
 <button class="comprar" onclick="comprar()">
-
 💰 Comprar agora
-
 </button>
+
 
 <button class="carrinho" onclick="carrinho()">
-
 🛒 Adicionar ao carrinho
-
 </button>
+
 
 <button class="compartilhar" onclick="compartilharProduto()">
-
 📤 Compartilhar Produto
-
 </button>
 
+
+<button class="avaliar" onclick="avaliarProduto()">
+⭐ Avaliar Produto
+</button>
+
+
 </div>
 
 </div>
+
+
 
 <div class="descricao">
 
+
 <h2>
-
 📄 Descrição do produto
-
 </h2>
 
+
 <p id="descricao">
-    Carregando descrição...
+Carregando descrição...
 </p>
 
-<h2>🎥 Vídeo de Demonstração</h2>
+
+
+<h2>
+🎥 Vídeo de Demonstração
+</h2>
+
 
 <video width="100%" controls style="border-radius:10px; margin-top:15px;">
-    <source src="demo.mp4" type="video/mp4">
-    Seu navegador não suporta vídeos.
+
+<source src="demo.mp4" type="video/mp4">
+
+Seu navegador não suporta vídeos.
+
 </video>
 
-<p style="margin-top:10px; color:#ccc;">
-   
-</p>
+
+
+
+<h2>
+⭐ Avaliações dos clientes
+</h2>
+
+
+
+<div id="listaAvaliacoes">
+
+Carregando avaliações...
+
+</div>
+
+
+
+<style>
+
+
+#listaAvaliacoes{
+
+margin-top:15px;
+
+}
+
+
+
+.avaliacao{
+
+background:#eee;
+
+padding:15px;
+
+border-radius:10px;
+
+margin-bottom:15px;
+
+}
+
+
+
+.avaliacao h3{
+
+margin:0;
+
+color:#f59e0b;
+
+}
+
+
+
+.avaliacao p{
+
+font-size:16px;
+
+}
+
+
+.avaliar{
+
+background:#f59e0b;
+
+color:white;
+
+}
+
+
+</style>
+
+
 
 </div>
 
@@ -202,8 +283,10 @@ R$ <span id="preco"></span>
 
 <script type="module">
 
+
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 
 import {
 getDatabase,
@@ -214,6 +297,8 @@ set
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+
+
 const firebaseConfig = {
 
 databaseURL:
@@ -221,39 +306,70 @@ databaseURL:
 
 };
 
+
+
 const app = initializeApp(firebaseConfig);
+
 
 const db = getDatabase(app);
 
+
+
 const url = new URLSearchParams(window.location.search);
+
 
 const id = url.get("id");
 
+
+
 let produtoAtual;
+
+
+
+// Carregar produto
 
 onValue(ref(db,"produtos/"+id),(snapshot)=>{
 
+
 const produto = snapshot.val();
+
 
 if(produto){
 
+
 produtoAtual = produto;
+
+
 
 document.getElementById("nome").innerHTML =
 produto.nome || "Aplicativo";
 
+
+
 document.getElementById("preco").innerHTML =
 produto.preco || "0";
+
+
 
 document.getElementById("imagem").src =
 produto.imagem || "app.jpg";
 
+
+
 document.getElementById("descricao").innerHTML =
 produto.descricao || "Sem descrição disponível.";
 
+
+
 }
 
+
 });
+
+
+
+
+
 
 window.voltar=function(){
 
@@ -261,7 +377,13 @@ history.back();
 
 };
 
+
+
+
+
+
 window.comprar=function(){
+
 
 if(!produtoAtual){
 
@@ -270,13 +392,24 @@ alert("Produto carregando...");
 return;
 
 }
+
+
 
 window.location.href =
 "pagina de pagamento.html?id="+id;
 
+
+
 };
 
+
+
+
+
+
+
 window.carrinho=function(){
+
 
 if(!produtoAtual){
 
@@ -286,7 +419,10 @@ return;
 
 }
 
+
+
 const produto = {
+
 
 id:id,
 
@@ -300,27 +436,53 @@ descricao:produtoAtual.descricao || "",
 
 data:Date.now()
 
+
 };
 
+
+
 const novo = push(
+
 ref(db,"carrinhos/cliente1")
+
 );
+
+
 
 set(novo,produto);
 
+
+
 alert("✅ Aplicativo adicionado ao carrinho!");
+
+
 
 };
 
+
+
+
+
+
+
 window.compartilharProduto=function(){
 
-const titulo=document.getElementById("nome").innerText;
 
-const texto="Confira este aplicativo na Minha Loja de Aplicativos!";
+const titulo =
+document.getElementById("nome").innerText;
 
-const url=window.location.href;
+
+const texto =
+"Confira este aplicativo na Minha Loja de Aplicativos!";
+
+
+const link =
+window.location.href;
+
+
 
 if(navigator.share){
+
 
 navigator.share({
 
@@ -328,23 +490,131 @@ title:titulo,
 
 text:texto,
 
-url:url
+url:link
 
 });
 
+
 }else{
 
-navigator.clipboard.writeText(url);
+
+navigator.clipboard.writeText(link);
+
 
 alert("✅ Link do produto copiado para a área de transferência!");
 
+
 }
+
 
 };
 
+
+
+
+
+
+
+
+// Mostrar avaliações do produto
+
+
+onValue(ref(db,"avaliacoes/"+id),(snapshot)=>{
+
+
+const lista =
+document.getElementById("listaAvaliacoes");
+
+
+
+if(!lista) return;
+
+
+
+lista.innerHTML = "";
+
+
+
+if(!snapshot.exists()){
+
+
+lista.innerHTML =
+"Este produto ainda não possui avaliações.";
+
+
+return;
+
+
+}
+
+
+
+snapshot.forEach((item)=>{
+
+
+const dados = item.val();
+
+
+
+lista.innerHTML += `
+
+<div style="
+background:#eee;
+padding:15px;
+border-radius:10px;
+margin-top:15px;
+">
+
+
+<h3>
+
+${"⭐".repeat(Number(dados.nota || 0))}
+
+</h3>
+
+
+<p>
+
+${dados.comentario || "Sem comentário"}
+
+</p>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+});
+
+
+
+
+
+
+
+
+// Abrir página de avaliação
+
+
+window.avaliarProduto=function(){
+
+
+window.location.href =
+"avaliacao.html?id="+id;
+
+
+};
+
+
+
 </script>
+
 
 </body>
 
 </html>
-
