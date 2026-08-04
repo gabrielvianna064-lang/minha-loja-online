@@ -6,125 +6,277 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Produto Aplicativo Cópia</title>
+<title>Produto Aplicativo</title>
+
 
 <style>
 
-body{
-font-family:Arial, sans-serif;
-background:#f4f4f4;
-margin:0;
+*{
+box-sizing:border-box;
 }
+
+
+body{
+
+font-family:Arial,sans-serif;
+background:#f1f5f9;
+margin:0;
+
+}
+
+
 
 header{
-background:#111;
+
+background:#111827;
 color:white;
-padding:20px;
+padding:25px;
 text-align:center;
+
 }
 
+
+
 .container{
-max-width:900px;
+
+max-width:950px;
 margin:30px auto;
 background:white;
 padding:30px;
-border-radius:15px;
+border-radius:20px;
+box-shadow:0 5px 20px #0003;
+
 }
+
+
 
 .produto{
+
 display:flex;
-gap:30px;
+gap:35px;
 flex-wrap:wrap;
+
 }
 
+
+
 .imagem img{
+
 width:300px;
 height:300px;
 object-fit:cover;
-border-radius:20px;
+border-radius:25px;
+
 }
+
+
 
 .info{
+
 flex:1;
+
 }
+
+
 
 h1{
-font-size:32px;
+
+font-size:35px;
+
 }
+
+
 
 .preco{
-font-size:30px;
-color:#009900;
+
+font-size:32px;
 font-weight:bold;
+color:#16a34a;
 margin:20px 0;
+
 }
 
-.descricao{
-margin-top:30px;
-background:#eee;
-padding:20px;
-border-radius:15px;
-}
 
-.descricao h2{
-margin-top:0;
-}
-
-.descricao p{
-font-size:18px;
-line-height:1.6;
-}
 
 button{
+
 width:100%;
 padding:15px;
 border:0;
-border-radius:10px;
+border-radius:12px;
 font-size:18px;
 cursor:pointer;
-margin-top:10px;
+margin-top:12px;
+transition:.3s;
+
 }
+
+
+
+button:hover{
+
+transform:scale(1.03);
+
+}
+
+
 
 .voltar{
-background:#111;
+
+background:#111827;
 color:white;
+
 }
+
+
 
 .comprar{
-background:#00a650;
+
+background:#16a34a;
 color:white;
+
 }
+
+
 
 .carrinho{
-background:#3483fa;
-color:white;
-}
 
-.compartilhar{
 background:#2563eb;
 color:white;
+
 }
 
-.compartilhar:hover{
-background:#1d4ed8;
+
+
+.compartilhar{
+
+background:#7c3aed;
+color:white;
+
 }
+
+
+
+.avaliar{
+
+background:#f59e0b;
+color:white;
+
+}
+
+
+
+
+
+.descricao{
+
+margin-top:35px;
+background:#f8fafc;
+padding:25px;
+border-radius:20px;
+
+}
+
+
+
+.descricao p{
+
+font-size:18px;
+line-height:1.7;
+
+}
+
+
+
+video{
+
+border-radius:15px;
+margin-top:15px;
+
+}
+
+
+
+
+#listaAvaliacoes{
+
+margin-top:20px;
+
+}
+
+
+
+.avaliacao{
+
+background:white;
+padding:20px;
+border-radius:15px;
+margin-top:15px;
+box-shadow:0 3px 10px #0002;
+
+}
+
+
+
+.avaliacao h3{
+
+margin:0;
+color:#f59e0b;
+
+}
+
+
+
+
+@media(max-width:700px){
+
+.imagem img{
+
+width:100%;
+height:auto;
+
+}
+
+
+.container{
+
+margin:10px;
+padding:20px;
+
+}
+
+
+}
+
 
 </style>
 
+
 </head>
+
+
 
 <body>
 
+
+
 <header>
 
-<h2>📱 Minha Loja de Aplicativos</h2>
+<h2>
+📱 Minha Loja de Aplicativos
+</h2>
 
 </header>
 
 
+
+
 <div class="container">
 
+
 <div class="produto">
+
+
 
 <div class="imagem">
 
@@ -133,11 +285,19 @@ background:#1d4ed8;
 </div>
 
 
+
+
+
 <div class="info">
 
+
 <h1 id="nome">
+
 Carregando...
+
 </h1>
+
+
 
 
 <div class="preco">
@@ -147,34 +307,62 @@ R$ <span id="preco"></span>
 </div>
 
 
+
+
+
 <button class="voltar" onclick="voltar()">
+
 ⬅️ Voltar
+
 </button>
+
+
 
 
 <button class="comprar" onclick="comprar()">
+
 💰 Comprar agora
+
 </button>
+
+
+
 
 
 <button class="carrinho" onclick="carrinho()">
+
 🛒 Adicionar ao carrinho
+
 </button>
+
+
+
 
 
 <button class="compartilhar" onclick="compartilharProduto()">
+
 📤 Compartilhar Produto
+
 </button>
+
+
+
 
 
 <button class="avaliar" onclick="avaliarProduto()">
+
 ⭐ Avaliar Produto
+
 </button>
 
 
-</div>
 
 </div>
+
+
+</div>
+
+
 
 
 
@@ -187,8 +375,12 @@ R$ <span id="preco"></span>
 
 
 <p id="descricao">
+
 Carregando descrição...
+
 </p>
+
+
 
 
 
@@ -197,13 +389,19 @@ Carregando descrição...
 </h2>
 
 
-<video width="100%" controls style="border-radius:10px; margin-top:15px;">
+
+
+<video width="100%" controls>
+
 
 <source src="demo.mp4" type="video/mp4">
 
+
 Seu navegador não suporta vídeos.
 
+
 </video>
+
 
 
 
@@ -211,6 +409,7 @@ Seu navegador não suporta vídeos.
 <h2>
 ⭐ Avaliações dos clientes
 </h2>
+
 
 
 
@@ -222,62 +421,9 @@ Carregando avaliações...
 
 
 
-<style>
-
-
-#listaAvaliacoes{
-
-margin-top:15px;
-
-}
-
-
-
-.avaliacao{
-
-background:#eee;
-
-padding:15px;
-
-border-radius:10px;
-
-margin-bottom:15px;
-
-}
-
-
-
-.avaliacao h3{
-
-margin:0;
-
-color:#f59e0b;
-
-}
-
-
-
-.avaliacao p{
-
-font-size:16px;
-
-}
-
-
-.avaliar{
-
-background:#f59e0b;
-
-color:white;
-
-}
-
-
-</style>
-
-
 
 </div>
+
 
 </div>
 
@@ -285,17 +431,24 @@ color:white;
 
 
 import { initializeApp }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
+
 import {
+
 getDatabase,
 ref,
 onValue,
 push,
 set
+
 }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
 
 
 
@@ -308,10 +461,14 @@ databaseURL:
 
 
 
+
+
 const app = initializeApp(firebaseConfig);
 
 
 const db = getDatabase(app);
+
+
 
 
 
@@ -322,11 +479,16 @@ const id = url.get("id");
 
 
 
-let produtoAtual;
+let produtoAtual = null;
 
 
 
-// Carregar produto
+
+
+// ===============================
+// CARREGAR PRODUTO
+// ===============================
+
 
 onValue(ref(db,"produtos/"+id),(snapshot)=>{
 
@@ -334,7 +496,9 @@ onValue(ref(db,"produtos/"+id),(snapshot)=>{
 const produto = snapshot.val();
 
 
+
 if(produto){
+
 
 
 produtoAtual = produto;
@@ -371,6 +535,13 @@ produto.descricao || "Sem descrição disponível.";
 
 
 
+
+
+// ===============================
+// VOLTAR
+// ===============================
+
+
 window.voltar=function(){
 
 history.back();
@@ -380,6 +551,13 @@ history.back();
 
 
 
+
+
+
+
+// ===============================
+// COMPRAR
+// ===============================
 
 
 window.comprar=function(){
@@ -408,6 +586,12 @@ window.location.href =
 
 
 
+
+// ===============================
+// CARRINHO
+// ===============================
+
+
 window.carrinho=function(){
 
 
@@ -426,18 +610,25 @@ const produto = {
 
 id:id,
 
+
 nome:produtoAtual.nome,
+
 
 preco:Number(produtoAtual.preco),
 
-imagem:produtoAtual.imagem,
+
+imagem:produtoAtual.imagem || "",
+
 
 descricao:produtoAtual.descricao || "",
+
 
 data:Date.now()
 
 
 };
+
+
 
 
 
@@ -449,11 +640,23 @@ ref(db,"carrinhos/cliente1")
 
 
 
-set(novo,produto);
+set(novo,produto)
 
+.then(()=>{
 
 
 alert("✅ Aplicativo adicionado ao carrinho!");
+
+
+})
+
+.catch((erro)=>{
+
+
+alert("Erro: "+erro);
+
+
+});
 
 
 
@@ -465,19 +668,32 @@ alert("✅ Aplicativo adicionado ao carrinho!");
 
 
 
+
+
+
+// ===============================
+// COMPARTILHAR
+// ===============================
+
+
 window.compartilharProduto=function(){
+
 
 
 const titulo =
 document.getElementById("nome").innerText;
 
 
+
 const texto =
 "Confira este aplicativo na Minha Loja de Aplicativos!";
 
 
+
 const link =
 window.location.href;
+
+
 
 
 
@@ -495,16 +711,20 @@ url:link
 });
 
 
+
 }else{
 
 
 navigator.clipboard.writeText(link);
 
 
-alert("✅ Link do produto copiado para a área de transferência!");
+
+alert("✅ Link copiado!");
+
 
 
 }
+
 
 
 };
@@ -516,7 +736,33 @@ alert("✅ Link do produto copiado para a área de transferência!");
 
 
 
-// Mostrar avaliações do produto
+
+
+// ===============================
+// IR PARA AVALIAÇÃO
+// ===============================
+
+
+window.avaliarProduto=function(){
+
+
+window.location.href =
+"avaliacao.html?id="+id;
+
+
+};
+
+
+
+
+
+
+
+
+
+// ===============================
+// MOSTRAR AVALIAÇÕES
+// ===============================
 
 
 onValue(ref(db,"avaliacoes/"+id),(snapshot)=>{
@@ -531,7 +777,10 @@ if(!lista) return;
 
 
 
-lista.innerHTML = "";
+
+lista.innerHTML="";
+
+
 
 
 
@@ -549,21 +798,23 @@ return;
 
 
 
+
+
+
 snapshot.forEach((item)=>{
 
 
-const dados = item.val();
+
+const dados=item.val();
+
+
 
 
 
 lista.innerHTML += `
 
-<div style="
-background:#eee;
-padding:15px;
-border-radius:10px;
-margin-top:15px;
-">
+
+<div class="avaliacao">
 
 
 <h3>
@@ -573,6 +824,7 @@ ${"⭐".repeat(Number(dados.nota || 0))}
 </h3>
 
 
+
 <p>
 
 ${dados.comentario || "Sem comentário"}
@@ -580,7 +832,9 @@ ${dados.comentario || "Sem comentário"}
 </p>
 
 
+
 </div>
+
 
 `;
 
@@ -589,26 +843,10 @@ ${dados.comentario || "Sem comentário"}
 });
 
 
+
 });
 
 
-
-
-
-
-
-
-// Abrir página de avaliação
-
-
-window.avaliarProduto=function(){
-
-
-window.location.href =
-"avaliacao.html?id="+id;
-
-
-};
 
 
 
@@ -616,5 +854,6 @@ window.location.href =
 
 
 </body>
+
 
 </html>
