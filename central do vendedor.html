@@ -492,7 +492,6 @@ style="display:none;border-radius:15px;">
 
 <br><br>
 
-
 <!-- APK DO APLICATIVO -->
 
 <h3>
@@ -505,17 +504,33 @@ id="arquivoAPK"
 accept=".apk"
 onchange="procurarAPK()">
 
-
-
 <p id="nomeAPK"></p>
-
 
 <br><br>
 
+<button
+onclick="conectarMercadoPago()"
+style="
+background:#009ee3;
+color:white;
+margin-bottom:10px;
+">
+💳 Conectar Mercado Pago
+</button>
 
 <button onclick="publicarApp()">
 🚀 Publicar App
 </button>
+
+<script>
+
+function conectarMercadoPago(){
+
+    window.location.href="/conectar-mercadopago";
+
+}
+
+</script>
 </div>
 <script>
 function calcularTaxa() {
