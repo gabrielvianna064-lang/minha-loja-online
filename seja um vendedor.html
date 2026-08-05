@@ -140,137 +140,89 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
-
-getDatabase,
-
-ref,
-
-push,
-
-set,
-
-query,
-
-orderByChild,
-
-equalTo,
-
-get
-
+    getDatabase,
+    ref,
+    push,
+    set,
+    query,
+    orderByChild,
+    equalTo,
+    get
 }
-
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // CONFIGURAÇÃO FIREBASE
-
 const firebaseConfig = {
-
-databaseURL:
-
-"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app"
-
+    apiKey: "AIzaSyAMG8workhkRJapQm1AHSMOSIPOnSWltpw",
+    authDomain: "minha-loja-5477a.firebaseapp.com",
+    databaseURL: "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "minha-loja-5477a",
+    storageBucket: "minha-loja-5477a.firebasestorage.app",
+    messagingSenderId: "680448342361",
+    appId: "1:680448342361:web:e35226b350ac4504d6f448",
+    measurementId: "G-0FBN3SDTNR"
 };
 
 // INICIAR FIREBASE
-
 const app = initializeApp(firebaseConfig);
-
 const db = getDatabase(app);
 
-document
-.getElementById("btnCadastro")
-.addEventListener("click", async function(){
+document.getElementById("btnCadastro").addEventListener("click", async function () {
 
-const tipo =
-document.getElementById("tipo").value;
+    const tipo = document.getElementById("tipo").value;
+    const documento = document.getElementById("documento").value.trim();
+    const conta = document.getElementById("conta").value.trim();
 
-const documento =
-document.getElementById("documento").value.trim();
+    if (!documento || !conta) {
+        alert("Preencha CPF/CNPJ e Conta Bancária!");
+        return;
+    }
 
-const conta =
-document.getElementById("conta").value.trim();
+    try {
 
-if(!documento || !conta){
+        const vendedores = ref(db, "vendedores");
 
-alert("Preencha CPF/CNPJ e Conta Bancária!");
+        const verificar = query(
+            vendedores,
+            orderByChild("documento"),
+            equalTo(documento)
+        );
 
-return;
+        const resultado = await get(verificar);
 
-}
+        if (resultado.exists()) {
+            alert("Este CPF ou CNPJ já está cadastrado como vendedor!");
+            return;
+        }
 
-try{
+        localStorage.setItem(
+            "dadosVendedor",
+            JSON.stringify({
+                tipo: tipo,
+                documento: documento,
+                conta: conta
+            })
+        );
 
-const vendedores = ref(db,"vendedores");
+        const novoVendedor = push(ref(db, "vendedores"));
 
-const verificar = query(
+        await set(novoVendedor, {
+            tipo: tipo,
+            documento: documento,
+            conta: conta,
+            dataCadastro: new Date().toLocaleString("pt-BR")
+        });
 
-vendedores,
+        alert("Cadastro de vendedor concluído com sucesso!");
+        window.location.href = "central do vendedor.html";
 
-orderByChild("documento"),
+    } catch (error) {
 
-equalTo(documento)
+        console.error(error);
+        alert("Erro ao cadastrar: " + error.message);
 
-);
-
-const resultado = await get(verificar);
-
-if(resultado.exists()){
-
-alert("Este CPF ou CNPJ já está cadastrado como vendedor!");
-
-return;
-
-}
-
-localStorage.setItem(
-
-"dadosVendedor",
-
-JSON.stringify({
-
-tipo:tipo,
-
-documento:documento,
-
-conta:conta
-
-})
-
-);
-
-const novoVendedor =
-
-push(ref(db,"vendedores"));
-
-await set(novoVendedor,{
-
-tipo: tipo,
-
-documento: documento,
-
-conta: conta,
-
-dataCadastro:
-
-new Date().toLocaleString("pt-BR")
-
-});
-
-alert("Cadastro de vendedor concluído com sucesso!");
-
-window.location.href = "central do vendedor.html";
-
-}catch(error){
-
-console.log(error);
-
-alert("Erro ao cadastrar: " + error.message);
-
-}
+    }
 
 });
 
 </script>
-
-</body>
-</html>
