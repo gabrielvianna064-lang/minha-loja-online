@@ -409,171 +409,114 @@ Central do Vendedor
 
 
 
+
 <!-- CADASTRO -->
 
 <div id="produto" class="page">
 
-    <h1>📱 Cadastrar Novo Aplicativo</h1>
+<h1>
+📱 Cadastrar Novo Aplicativo
+</h1>
 
-    <input
-        id="nomeApp"
-        placeholder="Nome do aplicativo">
+<input
+id="nomeApp"
+placeholder="Nome do aplicativo">
 
-    <select id="sistemaApp">
+<select id="sistemaApp">
 
-        <option value="Android">Android</option>
-        <option value="iOS">iOS</option>
-        <option value="Windows">Windows</option>
+<option value="Android">
+Android
+</option>
 
-    </select>
+<option value="iOS">
+iOS
+</option>
 
-    <textarea
-        id="descricaoApp"
-        placeholder="Descrição do aplicativo"></textarea>
+<option value="Windows">
+Windows
+</option>
 
+</select>
 
-    <input
-        id="precoApp"
-        type="number"
-        placeholder="Preço R$"
-        oninput="calcularTaxa()">
+<textarea
+id="descricaoApp"
+placeholder="Descrição do aplicativo">
+</textarea>
 
+<input
+id="precoApp"
+type="number"
+placeholder="Preço R$"
+oninput="calcularTaxa()">
 
+<!-- PAINEL DA TAXA -->
 
-    <div id="painelTaxa" style="
-        display:none;
-        margin-top:15px;
-        padding:15px;
-        background:#f5f5f5;
-        border:1px solid #ddd;
-        border-radius:12px;
-    ">
+<div id="painelTaxa" style="
+display:none;
+margin-top:10px;
+padding:15px;
+background:#f5f5f5;
+border:1px solid #ddd;
+border-radius:12px;
+">
 
-        <p>
-            💰 <b>Taxa da loja (10%):</b>
-            <span id="valorTaxa">R$ 0,00</span>
-        </p>
+<p>
+💰 <b>Taxa da loja (10%):</b>
+<span id="valorTaxa">R$ 0,00</span>
+</p>
 
-
-        <p>
-            ✅ <b>Você receberá:</b>
-            <span id="valorReceber">R$ 0,00</span>
-        </p>
-
-    </div>
-
-
-
-    <h3>🖼️ Imagem do Aplicativo</h3>
-
-    <input
-        type="file"
-        id="imagemApp"
-        accept="image/*">
-
-
-    <br><br>
-
-
-    <img
-        id="previewApp"
-        width="200"
-        style="display:none;border-radius:15px;">
-
-
-    <br><br>
-
-
-    <h3>📦 Arquivo APK</h3>
-
-    <input
-        type="file"
-        id="arquivoAPK"
-        accept=".apk"
-        onchange="procurarAPK">
-
-
-    <p id="nomeAPK"></p>
-
-
-
-    <div style="
-        display:flex;
-        gap:12px;
-        margin-top:20px;
-    ">
-
-
-        <button
-            onclick="publicarApp()"
-            style="
-            flex:1;
-            padding:15px;
-            background:#28a745;
-            color:white;
-            border:none;
-            border-radius:12px;
-            font-size:16px;
-            font-weight:bold;
-            cursor:pointer;
-        ">
-            🚀 Publicar App
-        </button>
-
-
-
-        <button
-            onclick="conectarMercadoPago()"
-            style="
-            flex:1;
-            padding:15px;
-            background:#009ee3;
-            color:white;
-            border:none;
-            border-radius:12px;
-            font-size:16px;
-            font-weight:bold;
-            cursor:pointer;
-        ">
-            💳 Conectar Mercado Pago
-        </button>
-
-
-    </div>
-
-
-
-    <p
-        id="statusMercadoPago"
-        style="
-        margin-top:15px;
-        text-align:center;
-        font-weight:bold;
-        color:#28a745;
-        ">
-    </p>
-
+<p>
+✅ <b>Você receberá:</b>
+<span id="valorReceber">R$ 0,00</span>
+</p>
 
 </div>
 
+<!-- IMAGEM DO APP -->
+
+<h3>
+🖼️ Imagem do Aplicativo
+</h3>
+
+<input
+type="file"
+id="imagemApp"
+accept="image/*">
+
+<br><br>
+
+<img
+id="previewApp"
+width="200"
+style="display:none;border-radius:15px;">
+
+<br><br>
 
 
-<script>
+<!-- APK DO APLICATIVO -->
+
+<h3>
+📦 Arquivo APK
+</h3>
+
+<input
+type="file"
+id="arquivoAPK"
+accept=".apk"
+onchange="procurarAPK()">
 
 
-function conectarMercadoPago(){
 
-    document.getElementById("statusMercadoPago").innerHTML =
-    "🔄 Conectando ao Mercado Pago...";
+<p id="nomeAPK"></p>
 
 
-    window.location.href="/conectar-mercadopago";
-
-}
+<br><br>
 
 
-</script>
-</script>
+<button onclick="publicarApp()">
+🚀 Publicar App
+</button>
+</div>
 <script>
 function calcularTaxa() {
 
@@ -776,16 +719,28 @@ Nenhuma venda realizada ainda.
 
 <div id="vitrine" class="page">
 
-    <h1>
-        🛒 Minha Vitrine Pública
-    </h1>
+    <h1>🛒 Minha Vitrine Pública</h1>
 
     <div class="apps" id="listaProdutos">
-        <!-- Produtos do Firebase aparecem aqui -->
+
+        <!-- Exemplo de produto -->
+        <div class="produto">
+            <img src="imagem-do-produto.jpg" alt="Produto">
+
+            <h3>Nome do Produto</h3>
+
+            <p>R$ 29,90</p>
+
+            <button class="btnExcluir" onclick="excluirProduto('ID_DO_PRODUTO')">
+                🗑 Excluir
+            </button>
+        </div>
+
+        <!-- Os produtos do Firebase aparecerão aqui -->
+
     </div>
 
 </div>
-
 <!-- EDITAR LOJA -->
 
 <div id="editarloja" class="page">
@@ -828,17 +783,15 @@ Nenhuma venda realizada ainda.
 import { initializeApp } from 
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-
-import { 
+import {
 getDatabase,
 ref,
 push,
 set,
-onValue
-} from 
+onValue,
+remove
+} from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-
 
 
 // CONFIG FIREBASE
@@ -931,6 +884,7 @@ window.publicarApp = async function(){
 
 try{
 
+
 let nome = document.getElementById("nomeApp").value;
 let sistema = document.getElementById("sistemaApp").value;
 let descricao = document.getElementById("descricaoApp").value;
@@ -939,25 +893,11 @@ let preco = Number(document.getElementById("precoApp").value);
 
 let imagem = document.getElementById("imagemApp").value;
 
-// VERIFICAR MERCADO PAGO
 
-let mercadoPagoConectado =
-localStorage.getItem("mercadoPagoConectado");
-
-if(mercadoPagoConectado !== "true"){
-
-alert(
-"⚠️ Antes de publicar o aplicativo, conecte sua conta do Mercado Pago."
-);
-
-return;
-
-}
 
 // PEGAR APK
 
-let arquivoAPK =
-document.getElementById("arquivoAPK").files[0];
+let arquivoAPK = document.getElementById("arquivoAPK").files[0];
 
 let nomeAPK = "";
 
@@ -966,6 +906,8 @@ if(arquivoAPK){
 nomeAPK = arquivoAPK.name;
 
 }
+
+
 
 // VERIFICAR CAMPOS
 
@@ -977,6 +919,7 @@ return;
 
 }
 
+
 if(preco <= 0){
 
 alert("Digite um preço válido");
@@ -985,11 +928,15 @@ return;
 
 }
 
+
+
+
 // DADOS DO VENDEDOR
 
 let vendedorId = "anonimo";
 let vendedorNome = "Vendedor";
 let vendedorEmail = "";
+
 
 if(usuario){
 
@@ -999,17 +946,23 @@ vendedorEmail = usuario.email;
 
 }
 
+
+
 // TAXA
 
 let taxa = preco * 10 / 100;
 
 let vendedorRecebe = preco - taxa;
 
+
+
 // ENVIAR DIRETO PARA LOJA
 
 let novoProduto = push(ref(db,"produtos"));
 
+
 await set(novoProduto,{
+
 
 nome:nome,
 
@@ -1019,15 +972,18 @@ sistema:sistema,
 
 descricao:descricao,
 
+
 preco:preco,
 
 taxa:taxa,
 
 receber:vendedorRecebe,
 
+
 imagem:imagem,
 
 apk:nomeAPK,
+
 
 vendas:0,
 
@@ -1035,34 +991,42 @@ status:"Disponível",
 
 data:new Date().toLocaleDateString("pt-BR"),
 
+
+
 vendedor:vendedorNome,
 
 vendedorId:vendedorId,
 
-vendedorEmail:vendedorEmail,
+vendedorEmail:vendedorEmail
 
-mercadoPagoConectado:true
 
 });
+
+
 
 alert(
 "✅ Aplicativo enviado para a loja!\n\n"+
 "📱 "+nome+
-"\n💰 R$ "+preco.toFixed(2)+
-"\n\n💵 Você receberá: R$ "+vendedorRecebe.toFixed(2)
+"\n💰 R$ "+preco.toFixed(2)
 );
+
+
 
 }
 catch(error){
 
+
 console.error(error);
+
 
 alert(
 "❌ Erro ao enviar produto:\n\n"+
 error.message
 );
 
+
 }
+
 
 }
 // GRÁFICO DE VENDAS REAL DO FIREBASE
@@ -1191,8 +1155,7 @@ total
 
 // ENVIAR PRODUTOS PARA A VITRINE
 
-const vitrine =
-document.getElementById("listaProdutos");
+const vitrine = document.getElementById("listaProdutos");
 
 onValue(ref(db,"produtos"),(snapshot)=>{
 
@@ -1204,29 +1167,36 @@ onValue(ref(db,"produtos"),(snapshot)=>{
 
         let produto = item.val();
 
+        // Mostra somente os produtos do vendedor logado
+        if(usuario && produto.vendedorId !== usuario.uid){
+            return;
+        }
+
         vitrine.innerHTML += `
 
-        <div class="app" onclick="abrirProduto('${item.key}')">
+        <div class="app">
 
-            <img
-            src="${produto.imagem || 'imagem-padrao.png'}"
-            width="200">
+            <div onclick="abrirProduto('${item.key}')" style="cursor:pointer">
 
-            <h2>
-            ${produto.nome}
-            </h2>
+                <img
+                src="${produto.imagem || 'imagem-padrao.png'}"
+                width="200">
 
-            <p>
-            ${produto.descricao}
-            </p>
+                <h2>${produto.nome}</h2>
 
-            <h3>
-            R$ ${produto.preco}
-            </h3>
+                <p>${produto.descricao}</p>
 
-            <p>
-            📱 ${produto.sistema}
-            </p>
+                <h3>R$ ${produto.preco}</h3>
+
+                <p>📱 ${produto.sistema}</p>
+
+            </div>
+
+            <button
+                onclick="excluirProduto('${item.key}')"
+                style="background:#e53935;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">
+                🗑 Excluir
+            </button>
 
         </div>
 
@@ -1235,7 +1205,6 @@ onValue(ref(db,"produtos"),(snapshot)=>{
     });
 
 });
-
 // ABRIR PÁGINA DO PRODUTO
 
 window.abrirProduto = function(id){
@@ -1320,8 +1289,50 @@ window.salvarLoja = function(){
 
 };
 
+window.salvarLoja = function(){
+
+    const nome = document.getElementById("nomeLoja").value;
+    const descricao = document.getElementById("descricaoLoja").value;
+
+    if(!nome){
+        alert("Digite o nome da loja.");
+        return;
+    }
+
+    set(ref(db,"lojas/"+usuario.uid),{
+        nome: nome,
+        descricao: descricao
+    })
+    .then(()=>{
+        alert("Loja atualizada com sucesso!");
+    })
+    .catch((erro)=>{
+        alert("Erro ao salvar: " + erro.message);
+    });
+
+};
+
+// ==========================
+// EXCLUIR PRODUTO
+// ==========================
+
+window.excluirProduto = function(id){
+
+    if(confirm("Deseja excluir este aplicativo?")){
+
+        remove(ref(db,"produtos/"+id))
+        .then(()=>{
+            alert("✅ Produto excluído com sucesso!");
+        })
+        .catch((erro)=>{
+            alert("Erro ao excluir: " + erro.message);
+        });
+
+    }
+
+}
+
 </script>
 
 </body>
-
 </html>
