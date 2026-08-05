@@ -25,13 +25,16 @@ const client = new MercadoPagoConfig({
     accessToken: process.env.MERCADO_PAGO_TOKEN
 });
 
+
 app.post("/criar-pagamento", async (req,res)=>{
 
     try {
 
         const { produto, preco } = req.body;
 
+
         const preference = new Preference(client);
+
 
         const pagamento = await preference.create({
 
@@ -40,24 +43,26 @@ app.post("/criar-pagamento", async (req,res)=>{
                 items:[
                     {
                         title: produto || "Produto da Loja",
-                        quantity: 1,
-                        unit_price: Number(preco) || 50
+                        quantity:1,
+                        unit_price:Number(preco) || 50
                     }
                 ],
 
                 back_urls:{
-                    success:"https://minha-loja-online-kbe8.onrender.com/",
-                    failure:"https://minha-loja-online-kbe8.onrender.com/",
-                    pending:"https://minha-loja-online-kbe8.onrender.com/"
+                    success:"http://localhost:3000/sucesso.html",
+                    failure:"http://localhost:3000/erro.html",
+                    pending:"http://localhost:3000/sucesso.html"
                 }
 
             }
 
         });
 
+
         res.json({
             link: pagamento.init_point
         });
+
 
     } catch(erro){
 
@@ -70,6 +75,8 @@ app.post("/criar-pagamento", async (req,res)=>{
     }
 
 });
+
+
 // ===============================
 // CADASTRO DE VENDEDOR
 // ===============================
@@ -115,6 +122,7 @@ app.post("/cadastrar-vendedor", async (req,res)=>{
     }
 
 });
+
 // ===============================
 // CONECTAR MERCADO PAGO VENDEDOR
 // ===============================
@@ -161,6 +169,56 @@ app.get("/conectar-mercadopago",(req,res)=>{
 
 });
 
+// ===============================
+// PAINEL DO VENDEDOR
+// ===============================
+
+const vendas = [];
+
+app.get("/api/painel", (req, res) => {
+
+    const faturamento = vendas.reduce((total, venda) => total + venda.valor, 0);
+
+    res.json({
+        downloads: vendas.length,
+        faturamento: faturamento,
+        aplicativos: 0,
+        avaliacao: 0
+    });
+
+});
+
+// ===============================
+// REGISTRAR VENDA
+// ===============================
+
+app.post("/api/vendas", (req, res) => {
+
+    const { cliente, produto, valor } = req.body;
+
+    vendas.push({
+        cliente: cliente || "Cliente",
+        produto: produto || "Produto",
+        valor: Number(valor) || 0,
+        data: new Date().toLocaleDateString("pt-BR")
+    });
+
+    res.json({
+        sucesso: true,
+        mensagem: "Venda registrada com sucesso."
+    });
+
+});
+
+// ===============================
+// LISTAR VENDAS
+// ===============================
+
+app.get("/api/vendas", (req, res) => {
+
+    res.json(vendas);
+
+});
 
 // ===============================
 // SERVIDOR
