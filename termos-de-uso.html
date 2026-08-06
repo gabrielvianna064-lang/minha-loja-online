@@ -3,252 +3,241 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Configurações da Loja</title>
+<title>Termos de Uso - Minha Loja</title>
 
 <style>
-body{
+*{
     margin:0;
-    font-family:Arial, sans-serif;
-    background:#f2f2f2;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
-header{
-    background:#111;
+body{
+    background:#0f172a;
     color:white;
-    padding:20px;
-    text-align:center;
 }
 
 .container{
+    width:90%;
     max-width:900px;
-    margin:20px auto;
-    background:white;
-    padding:25px;
+    margin:40px auto;
+    background:#1e293b;
+    padding:30px;
     border-radius:15px;
 }
 
-input, textarea{
-    width:100%;
-    padding:12px;
-    margin:8px 0;
-    border-radius:10px;
-    border:1px solid #ccc;
-    box-sizing:border-box;
+h1{
+    color:#38bdf8;
+    margin-bottom:20px;
+}
+
+h2{
+    margin-top:25px;
+    color:#22c55e;
+}
+
+p{
+    margin-top:10px;
+    line-height:1.8;
 }
 
 button{
-    padding:12px 20px;
-    border:0;
-    border-radius:10px;
-    cursor:pointer;
-    font-size:16px;
-}
-
-.salvar{
-    background:#008cff;
-    color:white;
-}
-
-.voltar{
-    background:#333;
-    color:white;
-    margin-bottom:15px;
-}
-
-.card{
-    background:#eee;
+    margin-top:20px;
+    width:100%;
     padding:15px;
-    border-radius:12px;
-    margin:10px 0;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
 }
 
+#btnAceitar{
+    background:#22c55e;
+}
+
+#btnAceitar:hover{
+    background:#16a34a;
+}
+
+.btn-voltar{
+    background:#2563eb;
+}
+
+.btn-voltar:hover{
+    background:#1d4ed8;
+}
+
+#status{
+    margin-top:20px;
+    color:#38bdf8;
+    text-align:center;
+    font-size:17px;
+}
 </style>
 
 </head>
 
 <body>
 
-
-<header>
-<h1>⚙️ Configurações da Loja</h1>
-</header>
-
-
 <div class="container">
 
+<h1>📜 Termos de Uso</h1>
 
-<button class="voltar" onclick="voltar()">
-⬅️ Voltar para Loja
+<p>
+Bem-vindo à Minha Loja. Ao utilizar nossa plataforma você concorda com os termos descritos abaixo.
+Caso não concorde, não utilize nossos serviços.
+</p>
+
+<h2>1. Objetivo</h2>
+
+<p>
+Nossa loja comercializa aplicativos, softwares, conteúdos digitais e serviços relacionados à tecnologia.
+</p>
+
+<h2>2. Conta do Usuário</h2>
+
+<p>
+O usuário é responsável por manter sua conta segura e fornecer informações verdadeiras.
+</p>
+
+<h2>3. Compras</h2>
+
+<p>
+Após a confirmação do pagamento o aplicativo poderá ser liberado automaticamente ou manualmente.
+</p>
+
+<h2>4. Licença</h2>
+
+<p>
+Os aplicativos são destinados apenas ao comprador.
+É proibida a revenda, redistribuição ou compartilhamento sem autorização.
+</p>
+
+<h2>5. Reembolso</h2>
+
+<p>
+Os pedidos de reembolso serão analisados conforme a legislação brasileira e as políticas da loja.
+</p>
+
+<h2>6. Privacidade</h2>
+
+<p>
+Os dados dos usuários são utilizados apenas para funcionamento da plataforma, compras, suporte e segurança.
+</p>
+
+<h2>7. Alterações</h2>
+
+<p>
+Os Termos de Uso poderão ser alterados a qualquer momento.
+</p>
+
+<h2>8. Aceitação</h2>
+
+<p>
+Ao clicar no botão abaixo você declara que leu e concorda com estes Termos de Uso.
+</p>
+
+<button id="btnAceitar" onclick="aceitarTermos()">
+✅ Aceito os Termos de Uso
 </button>
 
-
-<h2>🏪 Informações da Loja</h2>
-
-
-<input id="nomeLoja" placeholder="Nome da Loja">
-
-
-<textarea id="descricao" placeholder="Descrição da Loja"></textarea>
-
-
-<input id="logo" placeholder="Link da Logo">
-
-
-<h2>📱 Configurações dos Aplicativos</h2>
-
-
-<div class="card">
-✅ Publicação de aplicativos<br>
-✅ Controle de preços<br>
-✅ Gerenciamento de downloads
-</div>
-
-
-<h2>💳 Pagamentos</h2>
-
-
-<input id="pix" placeholder="Chave Pix">
-
-
-<input id="mercadoPago" placeholder="Mercado Pago">
-
-
-<br><br>
-
-
-<button class="salvar" onclick="salvar()">
-💾 Salvar Configurações
+<button class="btn-voltar" onclick="voltarLoja()">
+🏠 Voltar para a Loja
 </button>
 
-
-<p id="status"></p>
-
+<div id="status"></div>
 
 </div>
-
-
 
 <script type="module">
 
-import { initializeApp } from 
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-
-import { 
-getDatabase,
-ref,
-set,
-get
-} from 
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-
+import {
+    getDatabase,
+    ref,
+    push,
+    set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
 
-databaseURL:
-"https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+apiKey: "AIzaSyAMG8workhkRJapQm1AHSMOSIPOnSWltpw",
+
+authDomain: "minha-loja-5477a.firebaseapp.com",
+
+databaseURL: "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId: "minha-loja-5477a",
+
+storageBucket: "minha-loja-5477a.firebasestorage.app",
+
+messagingSenderId: "680448342361",
+
+appId: "1:680448342361:web:e35226b350ac4504d6f448",
+
+measurementId: "G-0FBN3SDTNR"
 
 };
-
-
 
 const app = initializeApp(firebaseConfig);
-
 const db = getDatabase(app);
 
+window.aceitarTermos = function(){
 
+    const botao = document.getElementById("btnAceitar");
 
-window.salvar = async function(){
+    botao.disabled = true;
+    botao.innerHTML = "Salvando...";
 
+    const novo = push(ref(db,"termosAceitos"));
 
-let dados = {
+    set(novo,{
 
-nome:
-document.getElementById("nomeLoja").value,
+        aceitou:true,
+        data:new Date().toLocaleString("pt-BR"),
+        navegador:navigator.userAgent
 
+    })
 
-descricao:
-document.getElementById("descricao").value,
+    .then(()=>{
 
+        document.getElementById("status").innerHTML =
+        "✅ Termos aceitos com sucesso!";
 
-logo:
-document.getElementById("logo").value,
+        botao.innerHTML = "✔ Termos Aceitos";
 
+        setTimeout(()=>{
 
-pix:
-document.getElementById("pix").value,
+            window.location.href="loja.html";
 
+        },2000);
 
-mercadoPago:
-document.getElementById("mercadoPago").value,
+    })
 
+    .catch((erro)=>{
 
-data:
-new Date().toLocaleString()
+        botao.disabled=false;
 
-};
+        botao.innerHTML="✅ Aceito os Termos de Uso";
 
+        document.getElementById("status").innerHTML =
+        "❌ "+erro.message;
 
-
-await set(
-ref(db,"configuracoes/loja"),
-dados
-);
-
-
-document.getElementById("status").innerHTML =
-"✅ Configurações salvas com sucesso!";
-
-
-}
-
-
-
-async function carregar(){
-
-
-const dados =
-await get(ref(db,"configuracoes/loja"));
-
-
-if(dados.exists()){
-
-
-let loja=dados.val();
-
-
-nomeLoja.value = loja.nome || "";
-
-descricao.value = loja.descricao || "";
-
-logo.value = loja.logo || "";
-
-pix.value = loja.pix || "";
-
-mercadoPago.value = loja.mercadoPago || "";
-
+    });
 
 }
 
+window.voltarLoja=function(){
+
+    window.location.href="loja.html";
 
 }
-
-
-carregar();
-
-
-
-window.voltar=function(){
-
-window.location.href="loja.html";
-
-}
-
 
 </script>
-
 
 </body>
 </html>
