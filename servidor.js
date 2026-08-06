@@ -41,6 +41,7 @@ try {
                 {
                     title: produto || "Produto da Loja",
                     quantity:1,
+                    currency_id: "BRL",
                     unit_price:Number(preco) || 50
                 }
             ],
@@ -72,7 +73,6 @@ try {
 }
 
 });
-
 // ===============================
 // CADASTRO DE VENDEDOR
 // ===============================
