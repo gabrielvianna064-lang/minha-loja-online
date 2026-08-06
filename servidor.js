@@ -25,57 +25,53 @@ const client = new MercadoPagoConfig({
     accessToken: process.env.MERCADO_PAGO_TOKEN
 });
 
-
 app.post("/criar-pagamento", async (req,res)=>{
 
-    try {
+try {
 
-        const { produto, preco } = req.body;
+    const { produto, preco } = req.body;
 
+    const preference = new Preference(client);
 
-        const preference = new Preference(client);
+    const pagamento = await preference.create({
 
+        body: {
 
-        const pagamento = await preference.create({
-
-            body: {
-
-                items:[
-                    {
-                        title: produto || "Produto da Loja",
-                        quantity:1,
-                        unit_price:Number(preco) || 50
-                    }
-                ],
-
-                back_urls:{
-                    success:"http://localhost:3000/sucesso.html",
-                    failure:"http://localhost:3000/erro.html",
-                    pending:"http://localhost:3000/sucesso.html"
+            items:[
+                {
+                    title: produto || "Produto da Loja",
+                    quantity:1,
+                    unit_price:Number(preco) || 50
                 }
+            ],
 
+            back_urls:{
+                success:"http://localhost:3000/sucesso.html",
+                failure:"http://localhost:3000/erro.html",
+                pending:"http://localhost:3000/sucesso.html"
             }
 
-        });
+        }
+
+    });
 
 
-        res.json({
-            link: pagamento.init_point
-        });
+    res.json({
+        link: pagamento.init_point
+    });
 
 
-    } catch(erro){
+} catch(erro){
 
-        console.log("Erro Mercado Pago:", erro);
+    console.error(JSON.stringify(erro, null, 2));
 
-        res.status(500).json({
-            erro:"Erro ao criar pagamento"
-        });
+    res.status(500).json({
+        erro:"Erro ao criar pagamento"
+    });
 
-    }
+}
 
 });
-
 
 // ===============================
 // CADASTRO DE VENDEDOR
