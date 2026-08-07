@@ -2,377 +2,238 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const { MercadoPagoConfig, Payment } = require("mercadopago");
+const { MercadoPagoConfig, Preference } = require("mercadopago");
 
 const app = express();
 
-
 app.use(cors());
-
 app.use(express.json());
 
 app.use(express.static("."));
 
 
-
 app.get("/", (req,res)=>{
-
-res.sendFile(__dirname + "/loja.html");
-
+    res.sendFile(__dirname + "/loja.html");
 });
 
 
-
 // ===============================
-// MERCADO PAGO PIX
+// MERCADO PAGO
 // ===============================
-
 
 const client = new MercadoPagoConfig({
-
-accessToken: process.env.MERCADO_PAGO_TOKEN
-
+    accessToken: process.env.MERCADO_PAGO_TOKEN
 });
 
 
+app.post("/criar-pagamento", async (req,res)=>{
+
+    try {
+
+        const { produto, preco } = req.body;
 
 
-
-// CRIAR PIX
-
-
-app.post("/criar-pix", async (req,res)=>{
+        const preference = new Preference(client);
 
 
-try {
+        const pagamento = await preference.create({
+
+            body: {
+
+                items:[
+                    {
+                        title: produto || "Produto da Loja",
+                        quantity:1,
+                        unit_price:Number(preco) || 50
+                    }
+                ],
+
+                back_urls:{
+                    success:"http://localhost:3000/sucesso.html",
+                    failure:"http://localhost:3000/erro.html",
+                    pending:"http://localhost:3000/sucesso.html"
+                }
+
+            }
+
+        });
 
 
-const { produto, preco } = req.body;
+        res.json({
+            link: pagamento.init_point
+        });
 
 
+    } catch(erro){
 
-const payment = new Payment(client);
+        console.log("Erro Mercado Pago:", erro);
 
+        res.status(500).json({
+            erro:"Erro ao criar pagamento"
+        });
 
-
-const pagamento = await payment.create({
-
-body:{
-
-
-transaction_amount:Number(preco) || 50,
-
-
-description:produto || "Produto da Loja",
-
-
-
-payment_method_id:"pix",
-
-
-
-payer:{
-
-email:"cliente@teste.com"
-
-}
-
-
-}
-
-
-});
-
-
-
-res.json({
-
-
-qr_code:
-
-pagamento.point_of_interaction.transaction_data.qr_code,
-
-
-
-qr_code_base64:
-
-pagamento.point_of_interaction.transaction_data.qr_code_base64
-
+    }
 
 });
-
-
-
-}catch(erro){
-
-
-console.log("Erro PIX:",erro);
-
-
-
-res.status(500).json({
-
-erro:"Erro ao criar PIX"
-
-});
-
-
-}
-
-
-});
-
-
-
 
 
 // ===============================
 // CADASTRO DE VENDEDOR
 // ===============================
 
+app.post("/cadastrar-vendedor", async (req,res)=>{
 
-app.post("/cadastrar-vendedor",(req,res)=>{
+    try {
 
-
-const {
-
-nome,
-email,
-loja
-
-}=req.body;
+        const {
+            nome,
+            email,
+            loja
+        } = req.body;
 
 
-
-console.log("==============================");
-
-console.log("NOVO VENDEDOR");
-
-console.log("Nome:",nome);
-
-console.log("Email:",email);
-
-console.log("Loja:",loja);
-
-console.log("==============================");
+        console.log("================================");
+        console.log("NOVO VENDEDOR");
+        console.log("Nome:", nome);
+        console.log("Email:", email);
+        console.log("Loja:", loja);
+        console.log("================================");
 
 
+        res.json({
 
-res.json({
+            sucesso:true,
 
-sucesso:true,
+            mensagem:"Cadastro enviado com sucesso"
 
-mensagem:"Cadastro enviado com sucesso"
+        });
+
+
+    } catch(erro){
+
+        console.log("Erro cadastro:",erro);
+
+        res.status(500).json({
+
+            erro:"Falha no cadastro"
+
+        });
+
+    }
 
 });
-
-
-});
-
-
-
-
-
 
 // ===============================
 // CONECTAR MERCADO PAGO VENDEDOR
 // ===============================
 
-
 app.get("/conectar-mercadopago",(req,res)=>{
 
+    res.send(`
+        <h1>💳 Conectar Mercado Pago</h1>
 
-res.send(`
+        <p>
+        Clique abaixo para entrar ou criar sua conta Mercado Pago.
+        </p>
 
-<h1>💳 Conectar Mercado Pago</h1>
+        <br>
 
+        <button onclick="window.location.href='https://www.mercadopago.com.br/'"
+        style="
+        padding:15px;
+        background:#009ee3;
+        color:white;
+        border:none;
+        border-radius:10px;
+        font-size:16px;
+        cursor:pointer;
+        ">
+        💳 Abrir Mercado Pago
+        </button>
 
-<p>
-Entre ou crie sua conta Mercado Pago:
-</p>
+        <br><br>
 
-
-
-<button onclick="window.location.href='https://www.mercadopago.com.br/'"
-
-style="
-
-padding:15px;
-background:#009ee3;
-color:white;
-border:none;
-border-radius:10px;
-font-size:16px;
-
-">
-
-💳 Abrir Mercado Pago
-
-</button>
-
-
-
-<br><br>
-
-
-
-<button onclick="window.location.href='/central do vendedor.html'"
-
-style="
-
-padding:15px;
-background:#28a745;
-color:white;
-border:none;
-border-radius:10px;
-
-">
-
-🔙 Voltar para Central do Vendedor
-
-</button>
-
-
-`);
-
+        <button onclick="window.location.href='/central do vendedor.html'"
+        style="
+        padding:15px;
+        background:#28a745;
+        color:white;
+        border:none;
+        border-radius:10px;
+        font-size:16px;
+        cursor:pointer;
+        ">
+        🔙 Voltar para Central do Vendedor
+        </button>
+    `);
 
 });
-
-
-
-
 
 // ===============================
 // PAINEL DO VENDEDOR
 // ===============================
 
+const vendas = [];
 
-const vendas=[];
+app.get("/api/painel", (req, res) => {
 
+    const faturamento = vendas.reduce((total, venda) => total + venda.valor, 0);
 
-
-app.get("/api/painel",(req,res)=>{
-
-
-const faturamento = vendas.reduce(
-
-(total,venda)=>total+venda.valor,0
-
-);
-
-
-
-res.json({
-
-downloads:vendas.length,
-
-faturamento:faturamento,
-
-aplicativos:0,
-
-avaliacao:0
+    res.json({
+        downloads: vendas.length,
+        faturamento: faturamento,
+        aplicativos: 0,
+        avaliacao: 0
+    });
 
 });
-
-
-});
-
-
-
-
-
 
 // ===============================
 // REGISTRAR VENDA
 // ===============================
 
+app.post("/api/vendas", (req, res) => {
 
-app.post("/api/vendas",(req,res)=>{
+    const { cliente, produto, valor } = req.body;
 
+    vendas.push({
+        cliente: cliente || "Cliente",
+        produto: produto || "Produto",
+        valor: Number(valor) || 0,
+        data: new Date().toLocaleDateString("pt-BR")
+    });
 
-const {
-
-cliente,
-produto,
-valor
-
-}=req.body;
-
-
-
-vendas.push({
-
-
-cliente:cliente || "Cliente",
-
-
-produto:produto || "Produto",
-
-
-valor:Number(valor)||0,
-
-
-data:new Date().toLocaleDateString("pt-BR")
-
+    res.json({
+        sucesso: true,
+        mensagem: "Venda registrada com sucesso."
+    });
 
 });
-
-
-
-res.json({
-
-sucesso:true,
-
-mensagem:"Venda registrada com sucesso"
-
-});
-
-
-});
-
-
-
-
-
 
 // ===============================
 // LISTAR VENDAS
 // ===============================
 
+app.get("/api/vendas", (req, res) => {
 
-app.get("/api/vendas",(req,res)=>{
-
-
-res.json(vendas);
-
+    res.json(vendas);
 
 });
-
-
-
-
-
-
 
 // ===============================
 // SERVIDOR
 // ===============================
 
-
 app.listen(3000,()=>{
 
-
 console.log(`
-
 ================================
-LOJA ONLINE + PIX MERCADO PAGO
+ LOJA ONLINE + MERCADO PAGO
 ================================
 
 Servidor aberto em:
-
 http://localhost:3000
 
 `);
-
 
 });
