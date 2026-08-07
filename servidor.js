@@ -6,30 +6,40 @@ const { MercadoPagoConfig, Payment } = require("mercadopago");
 
 const app = express();
 
+
 app.use(cors());
+
 app.use(express.json());
 
 app.use(express.static("."));
 
 
+
 app.get("/", (req,res)=>{
-    res.sendFile(__dirname + "/loja.html");
+
+res.sendFile(__dirname + "/loja.html");
+
 });
+
 
 
 // ===============================
 // MERCADO PAGO PIX
 // ===============================
 
+
 const client = new MercadoPagoConfig({
 
-    accessToken: process.env.MERCADO_PAGO_TOKEN
+accessToken: process.env.MERCADO_PAGO_TOKEN
 
 });
 
 
 
+
+
 // CRIAR PIX
+
 
 app.post("/criar-pix", async (req,res)=>{
 
@@ -50,10 +60,10 @@ const pagamento = await payment.create({
 body:{
 
 
-transaction_amount: Number(preco) || 50,
+transaction_amount:Number(preco) || 50,
 
 
-description: produto || "Produto da Loja",
+description:produto || "Produto da Loja",
 
 
 
@@ -71,10 +81,7 @@ email:"cliente@teste.com"
 }
 
 
-
 });
-
-
 
 
 
@@ -82,13 +89,14 @@ res.json({
 
 
 qr_code:
+
 pagamento.point_of_interaction.transaction_data.qr_code,
 
 
 
 qr_code_base64:
-pagamento.point_of_interaction.transaction_data.qr_code_base64
 
+pagamento.point_of_interaction.transaction_data.qr_code_base64
 
 
 });
@@ -117,15 +125,13 @@ erro:"Erro ao criar PIX"
 
 
 
+
 // ===============================
 // CADASTRO DE VENDEDOR
 // ===============================
 
 
-app.post("/cadastrar-vendedor", async (req,res)=>{
-
-
-try {
+app.post("/cadastrar-vendedor",(req,res)=>{
 
 
 const {
@@ -152,7 +158,6 @@ console.log("==============================");
 
 
 
-
 res.json({
 
 sucesso:true,
@@ -162,24 +167,8 @@ mensagem:"Cadastro enviado com sucesso"
 });
 
 
-
-}catch(erro){
-
-
-console.log(erro);
-
-
-res.status(500).json({
-
-erro:"Falha no cadastro"
-
 });
 
-
-}
-
-
-});
 
 
 
@@ -199,11 +188,9 @@ res.send(`
 
 
 <p>
-Clique abaixo para entrar ou criar sua conta Mercado Pago.
+Entre ou crie sua conta Mercado Pago:
 </p>
 
-
-<br>
 
 
 <button onclick="window.location.href='https://www.mercadopago.com.br/'"
@@ -285,11 +272,11 @@ aplicativos:0,
 
 avaliacao:0
 
-
 });
 
 
 });
+
 
 
 
@@ -315,11 +302,15 @@ valor
 
 vendas.push({
 
+
 cliente:cliente || "Cliente",
+
 
 produto:produto || "Produto",
 
+
 valor:Number(valor)||0,
+
 
 data:new Date().toLocaleDateString("pt-BR")
 
@@ -362,6 +353,7 @@ res.json(vendas);
 
 
 
+
 // ===============================
 // SERVIDOR
 // ===============================
@@ -373,13 +365,12 @@ app.listen(3000,()=>{
 console.log(`
 
 ================================
- LOJA ONLINE + PIX MERCADO PAGO
+LOJA ONLINE + PIX MERCADO PAGO
 ================================
 
 Servidor aberto em:
 
 http://localhost:3000
-
 
 `);
 
