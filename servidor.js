@@ -1,36 +1,42 @@
-const express = require("express");
-const cors = require("cors");
 require("dotenv").config();
 
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 
 const app = express();
 
+
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static("."));
+
+// Abrir arquivos da loja
+app.use(express.static(__dirname));
 
 
-app.get("/", (req,res)=>{
-    res.sendFile(__dirname + "/loja.html");
+// Abrir loja.html
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "loja.html"));
 });
 
 
-// ===============================
-// MERCADO PAGO
-// ===============================
-
+// Mercado Pago
 const client = new MercadoPagoConfig({
-    accessToken: process.env.MERCADO_PAGO_TOKEN
+
+    accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN
+
 });
 
 
-app.post("/criar-pagamento", async (req,res)=>{
+
+// Criar pagamento
+app.post("/criar-pagamento", async (req, res) => {
 
     try {
 
-        const { produto, preco } = req.body;
+        const { nome, preco } = req.body;
 
 
         const preference = new Preference(client);
@@ -40,18 +46,29 @@ app.post("/criar-pagamento", async (req,res)=>{
 
             body: {
 
-                items:[
+                items: [
+
                     {
-                        title: produto || "Produto da Loja",
-                        quantity:1,
-                        unit_price:Number(preco) || 50
+
+                        title: nome,
+
+                        quantity: 1,
+
+                        unit_price: Number(preco)
+
                     }
+
                 ],
 
-                back_urls:{
-                    success:"http://localhost:3000/sucesso.html",
-                    failure:"http://localhost:3000/erro.html",
-                    pending:"http://localhost:3000/sucesso.html"
+
+                back_urls: {
+
+                    success: "http://localhost:3000/sucesso index.html",
+
+                    failure: "http://localhost:3000/erro.html",
+
+                    pending: "http://localhost:3000/pendente.html"
+
                 }
 
             }
@@ -59,181 +76,54 @@ app.post("/criar-pagamento", async (req,res)=>{
         });
 
 
+
         res.json({
+
             link: pagamento.init_point
+
         });
 
 
-    } catch(erro){
 
-        console.log("Erro Mercado Pago:", erro);
+    } catch (erro) {
+
+
+        console.log("Erro Mercado Pago:");
+
+        console.log(erro);
+
+
 
         res.status(500).json({
-            erro:"Erro ao criar pagamento"
+
+            erro: "Erro ao criar pagamento"
+
         });
+
 
     }
 
 });
 
 
-// ===============================
-// CADASTRO DE VENDEDOR
-// ===============================
-
-app.post("/cadastrar-vendedor", async (req,res)=>{
-
-    try {
-
-        const {
-            nome,
-            email,
-            loja
-        } = req.body;
 
 
-        console.log("================================");
-        console.log("NOVO VENDEDOR");
-        console.log("Nome:", nome);
-        console.log("Email:", email);
-        console.log("Loja:", loja);
-        console.log("================================");
+// Teste
+app.get("/teste", (req,res)=>{
 
-
-        res.json({
-
-            sucesso:true,
-
-            mensagem:"Cadastro enviado com sucesso"
-
-        });
-
-
-    } catch(erro){
-
-        console.log("Erro cadastro:",erro);
-
-        res.status(500).json({
-
-            erro:"Falha no cadastro"
-
-        });
-
-    }
+    res.send("Servidor funcionando!");
 
 });
 
-// ===============================
-// CONECTAR MERCADO PAGO VENDEDOR
-// ===============================
 
-app.get("/conectar-mercadopago",(req,res)=>{
 
-    res.send(`
-        <h1>💳 Conectar Mercado Pago</h1>
 
-        <p>
-        Clique abaixo para entrar ou criar sua conta Mercado Pago.
-        </p>
 
-        <br>
+app.listen(3000, () => {
 
-        <button onclick="window.location.href='https://www.mercadopago.com.br/'"
-        style="
-        padding:15px;
-        background:#009ee3;
-        color:white;
-        border:none;
-        border-radius:10px;
-        font-size:16px;
-        cursor:pointer;
-        ">
-        💳 Abrir Mercado Pago
-        </button>
-
-        <br><br>
-
-        <button onclick="window.location.href='/central do vendedor.html'"
-        style="
-        padding:15px;
-        background:#28a745;
-        color:white;
-        border:none;
-        border-radius:10px;
-        font-size:16px;
-        cursor:pointer;
-        ">
-        🔙 Voltar para Central do Vendedor
-        </button>
-    `);
-
-});
-
-// ===============================
-// PAINEL DO VENDEDOR
-// ===============================
-
-const vendas = [];
-
-app.get("/api/painel", (req, res) => {
-
-    const faturamento = vendas.reduce((total, venda) => total + venda.valor, 0);
-
-    res.json({
-        downloads: vendas.length,
-        faturamento: faturamento,
-        aplicativos: 0,
-        avaliacao: 0
-    });
-
-});
-
-// ===============================
-// REGISTRAR VENDA
-// ===============================
-
-app.post("/api/vendas", (req, res) => {
-
-    const { cliente, produto, valor } = req.body;
-
-    vendas.push({
-        cliente: cliente || "Cliente",
-        produto: produto || "Produto",
-        valor: Number(valor) || 0,
-        data: new Date().toLocaleDateString("pt-BR")
-    });
-
-    res.json({
-        sucesso: true,
-        mensagem: "Venda registrada com sucesso."
-    });
-
-});
-
-// ===============================
-// LISTAR VENDAS
-// ===============================
-
-app.get("/api/vendas", (req, res) => {
-
-    res.json(vendas);
-
-});
-
-// ===============================
-// SERVIDOR
-// ===============================
-
-app.listen(3000,()=>{
-
-console.log(`
-================================
- LOJA ONLINE + MERCADO PAGO
-================================
-
-Servidor aberto em:
-http://localhost:3000
-
-`);
+    console.log("----------------------------");
+    console.log("Servidor da loja iniciado!");
+    console.log("http://localhost:3000");
+    console.log("----------------------------");
 
 });
