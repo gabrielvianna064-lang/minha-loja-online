@@ -8,112 +8,124 @@
 
 <title>Pagamento PIX - Loja de Apps</title>
 
+
 <style>
 
 body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#0f172a;
-color:white;
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0f172a;
+    color:white;
 }
 
 
 .container{
-max-width:450px;
-margin:50px auto;
-background:#1e293b;
-padding:30px;
-border-radius:15px;
-box-shadow:0 0 20px #000;
+
+    max-width:450px;
+    margin:40px auto;
+    background:#1e293b;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 0 20px #000;
+
 }
 
 
 h1{
-text-align:center;
-color:#38bdf8;
+
+    text-align:center;
+    color:#38bdf8;
+
 }
 
 
 .app{
-background:#334155;
-padding:15px;
-border-radius:10px;
+
+    background:#334155;
+    padding:15px;
+    border-radius:10px;
+
 }
 
 
 img{
-width:100%;
-height:250px;
-object-fit:cover;
-border-radius:15px;
+
+    width:100%;
+    height:250px;
+    object-fit:cover;
+    border-radius:15px;
+
 }
 
 
 .preco{
-font-size:28px;
-color:#22c55e;
-font-weight:bold;
+
+    font-size:28px;
+    color:#22c55e;
+    font-weight:bold;
+
 }
 
 
 button{
 
-width:100%;
-padding:15px;
-margin-top:15px;
-border:0;
-border-radius:10px;
-font-size:18px;
-cursor:pointer;
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    cursor:pointer;
 
 }
 
 
 .pagar{
 
-background:#009ee3;
-color:white;
+    background:#009ee3;
+    color:white;
 
 }
 
 
 .copiar{
 
-background:#22c55e;
-color:white;
+    background:#22c55e;
+    color:white;
 
 }
 
-
-.info{
-
-text-align:center;
-margin-top:20px;
-color:#94a3b8;
-
-}
 
 
 #pixArea{
 
-display:none;
-text-align:center;
-margin-top:20px;
+    display:none;
+    text-align:center;
+    margin-top:20px;
 
 }
 
 
 #qrCode{
 
-width:220px;
-height:220px;
+    width:220px;
+    height:220px;
 
 }
 
 
+.info{
+
+    text-align:center;
+    color:#94a3b8;
+    margin-top:20px;
+
+}
+
 </style>
 
 </head>
+
 
 
 <body>
@@ -154,7 +166,6 @@ R$ <span id="preco">0</span>
 </div>
 
 
-
 </div>
 
 
@@ -167,15 +178,18 @@ R$ <span id="preco">0</span>
 
 
 
+
 <div id="pixArea">
 
 
-<h2>
-Pagamento PIX
-</h2>
+<h3>
+Pague pelo PIX
+</h3>
+
 
 
 <img id="qrCode">
+
 
 
 <p id="codigoPix"></p>
@@ -184,64 +198,81 @@ Pagamento PIX
 
 <button class="copiar" onclick="copiarPix()">
 
-📋 Copiar código PIX
+📋 Copiar PIX
 
 </button>
 
 
-
 </div>
-
 
 
 
 <div class="info">
 
-Pagamento seguro PIX
+Pagamento seguro Mercado Pago PIX
 
 </div>
 
 
 
 </div>
+
+
+
 
 
 <script type="module">
 
+
 import { initializeApp }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
 import {
+
 getDatabase,
 ref,
 onValue
+
 }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
 
 
 
 const firebaseConfig={
 
+
 databaseURL:
+
 "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
 
 };
 
 
 
+
 const app=initializeApp(firebaseConfig);
+
 
 const db=getDatabase(app);
 
 
 
+
 const url=new URLSearchParams(window.location.search);
+
 
 const id=url.get("id");
 
 
+
 let produtoAtual;
+
 
 
 
@@ -254,19 +285,24 @@ const produto=snapshot.val();
 
 if(produto){
 
+
 produtoAtual=produto;
+
 
 
 document.getElementById("nomeApp").innerHTML =
 produto.nome || "Aplicativo";
 
 
+
 document.getElementById("preco").innerHTML =
 produto.preco || "0";
 
 
+
 document.getElementById("imagem").src =
 produto.imagem || "app.jpg";
+
 
 
 document.getElementById("descricao").innerHTML =
@@ -283,7 +319,9 @@ produto.descricao || "Sem descrição";
 
 
 
+
 window.pagar = async function(){
+
 
 
 if(!produtoAtual){
@@ -296,8 +334,7 @@ return;
 
 
 
-
-const resposta = await fetch("https://SEU-SERVIDOR.onrender.com/criar-pix",{
+const resposta = await fetch("/criar-pix",{
 
 method:"POST",
 
@@ -315,6 +352,7 @@ preco:Number(produtoAtual.preco)
 
 })
 
+
 });
 
 
@@ -323,21 +361,21 @@ const dados = await resposta.json();
 
 
 
-
 if(dados.qr_code_base64){
+
 
 
 document.getElementById("pixArea").style.display="block";
 
 
 
-document.getElementById("qrCode").src =
+document.getElementById("qrCode").src=
 
-"data:image/png;base64," + dados.qr_code_base64;
+"data:image/png;base64,"+dados.qr_code_base64;
 
 
 
-document.getElementById("codigoPix").innerText =
+document.getElementById("codigoPix").innerText=
 
 dados.qr_code;
 
@@ -364,7 +402,7 @@ alert("Erro ao gerar PIX");
 window.copiarPix=function(){
 
 
-const codigo =
+const codigo=
 
 document.getElementById("codigoPix").innerText;
 
@@ -377,13 +415,14 @@ navigator.clipboard.writeText(codigo);
 alert("✅ PIX copiado!");
 
 
+
 };
 
 
 
 </script>
 
+
 </body>
 
 </html>
-
