@@ -206,39 +206,25 @@ Pagamento seguro PIX
 </div>
 
 
-
-
-
-
 <script type="module">
 
-
 import { initializeApp }
-
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
-
 import {
-
 getDatabase,
 ref,
 onValue
-
 }
-
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
 
 
 
 const firebaseConfig={
 
-
 databaseURL:
-
 "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
-
 
 };
 
@@ -246,20 +232,16 @@ databaseURL:
 
 const app=initializeApp(firebaseConfig);
 
-
 const db=getDatabase(app);
 
 
 
 const url=new URLSearchParams(window.location.search);
 
-
 const id=url.get("id");
 
 
-
 let produtoAtual;
-
 
 
 
@@ -272,24 +254,19 @@ const produto=snapshot.val();
 
 if(produto){
 
-
 produtoAtual=produto;
-
 
 
 document.getElementById("nomeApp").innerHTML =
 produto.nome || "Aplicativo";
 
 
-
 document.getElementById("preco").innerHTML =
 produto.preco || "0";
 
 
-
 document.getElementById("imagem").src =
 produto.imagem || "app.jpg";
-
 
 
 document.getElementById("descricao").innerHTML =
@@ -320,35 +297,25 @@ return;
 
 
 
-const resposta = await fetch("/criar-pix",{
-
+const resposta = await fetch("https://SEU-SERVIDOR.onrender.com/criar-pix",{
 
 method:"POST",
 
-
 headers:{
-
 
 "Content-Type":"application/json"
 
-
 },
-
 
 body:JSON.stringify({
 
-
 produto:produtoAtual.nome,
-
 
 preco:Number(produtoAtual.preco)
 
-
 })
 
-
 });
-
 
 
 
@@ -358,7 +325,6 @@ const dados = await resposta.json();
 
 
 if(dados.qr_code_base64){
-
 
 
 document.getElementById("pixArea").style.display="block";
@@ -398,8 +364,8 @@ alert("Erro ao gerar PIX");
 window.copiarPix=function(){
 
 
-
 const codigo =
+
 document.getElementById("codigoPix").innerText;
 
 
@@ -411,14 +377,13 @@ navigator.clipboard.writeText(codigo);
 alert("✅ PIX copiado!");
 
 
-
 };
 
 
 
 </script>
 
-
 </body>
 
 </html>
+
