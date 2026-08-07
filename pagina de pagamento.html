@@ -8,47 +8,67 @@
 
 <title>Pagamento - Loja de Apps</title>
 
+
 <style>
 
 body{
+
     margin:0;
     font-family:Arial,sans-serif;
     background:#0f172a;
     color:white;
+
 }
 
+
 .container{
+
     max-width:450px;
     margin:40px auto;
     background:#1e293b;
-    padding:30px;
+    padding:25px;
     border-radius:15px;
     box-shadow:0 0 20px #000;
+
 }
+
 
 h1{
+
     text-align:center;
     color:#38bdf8;
+
 }
 
-.app{
+
+.produto{
+
     background:#334155;
     padding:15px;
-    border-radius:10px;
+    border-radius:12px;
+
 }
 
-img{
+
+#imagem{
+
     width:100%;
-    height:250px;
+    height:230px;
     object-fit:cover;
-    border-radius:15px;
+    border-radius:12px;
+
 }
+
 
 .preco{
-    font-size:28px;
+
+    font-size:30px;
     color:#22c55e;
     font-weight:bold;
+
 }
+
+
 
 button{
 
@@ -62,22 +82,65 @@ button{
 
 }
 
-.pagar{
+
+
+.mercado{
 
     background:#009ee3;
     color:white;
 
 }
 
-.info{
 
+
+.pix{
+
+    background:#22c55e;
+    color:white;
+
+}
+
+
+
+.copiar{
+
+    background:#475569;
+    color:white;
+
+}
+
+
+
+#pixArea{
+
+    display:none;
     text-align:center;
-    color:#94a3b8;
     margin-top:20px;
 
 }
 
+
+
+#qrCode{
+
+    width:220px;
+    height:220px;
+
+}
+
+
+
+.info{
+
+    text-align:center;
+    margin-top:20px;
+    color:#94a3b8;
+
+}
+
+
 </style>
+
 
 </head>
 
@@ -89,24 +152,30 @@ button{
 
 
 <h1>
-🚀 Loja de Aplicativos
+🚀 Pagamento
 </h1>
 
 
 
-<div class="app">
+<div class="produto">
 
 
 <img id="imagem" src="app.jpg">
 
 
-<h2 id="nomeApp">
+
+<h2 id="nome">
+
 Carregando...
+
 </h2>
 
 
+
 <p id="descricao">
+
 Carregando...
+
 </p>
 
 
@@ -122,11 +191,47 @@ R$ <span id="preco">0</span>
 
 
 
-<button class="pagar" onclick="pagar()">
 
-💳 Pagar com Mercado Pago
+<button class="mercado" onclick="mercadoPago()">
+
+💳 Pagar Mercado Pago
 
 </button>
+
+
+
+<button class="pix" onclick="gerarPix()">
+
+📱 Pagar com PIX QR Code
+
+</button>
+
+
+
+
+<div id="pixArea">
+
+
+<h3>
+Escaneie o QR Code
+</h3>
+
+
+<img id="qrCode">
+
+
+<p id="codigoPix"></p>
+
+
+
+<button class="copiar" onclick="copiarPix()">
+
+📋 Copiar PIX
+
+</button>
+
+
+</div>
 
 
 
@@ -135,6 +240,7 @@ R$ <span id="preco">0</span>
 Pagamento seguro Mercado Pago
 
 </div>
+
 
 
 </div>
@@ -147,6 +253,7 @@ Pagamento seguro Mercado Pago
 
 
 import { initializeApp }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
@@ -163,24 +270,30 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
 
+
 const firebaseConfig={
 
+
 databaseURL:
+
 "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
 
 };
 
 
 
-const app=initializeApp(firebaseConfig);
-
-const db=getDatabase(app);
+const app = initializeApp(firebaseConfig);
 
 
+const db = getDatabase(app);
 
-const url=new URLSearchParams(window.location.search);
 
-const id=url.get("id");
+
+const params = new URLSearchParams(location.search);
+
+
+const id = params.get("id");
 
 
 
@@ -188,10 +301,12 @@ let produtoAtual;
 
 
 
-onValue(ref(db,"produtos/"+id),(snapshot)=>{
 
 
-const produto=snapshot.val();
+onValue(ref(db,"produtos/"+id),(snap)=>{
+
+
+const produto=snap.val();
 
 
 
@@ -202,20 +317,22 @@ produtoAtual=produto;
 
 
 
-document.getElementById("nomeApp").innerHTML =
-produto.nome || "Aplicativo";
+document.getElementById("nome").innerHTML =
+produto.nome;
+
+
+
+document.getElementById("descricao").innerHTML =
+produto.descricao || "Aplicativo";
 
 
 document.getElementById("preco").innerHTML =
-produto.preco || "0";
+produto.preco;
+
 
 
 document.getElementById("imagem").src =
 produto.imagem || "app.jpg";
-
-
-document.getElementById("descricao").innerHTML =
-produto.descricao || "Sem descrição";
 
 
 }
@@ -229,18 +346,9 @@ produto.descricao || "Sem descrição";
 
 
 
-window.pagar = async function(){
+// Mercado Pago
 
-
-
-if(!produtoAtual){
-
-alert("Produto não carregado");
-
-return;
-
-}
-
+window.mercadoPago = async()=>{
 
 
 const resposta = await fetch("/criar-pagamento",{
@@ -252,6 +360,7 @@ headers:{
 "Content-Type":"application/json"
 
 },
+
 
 body:JSON.stringify({
 
@@ -266,20 +375,86 @@ preco:Number(produtoAtual.preco)
 
 
 
-const dados = await resposta.json();
+const dados=await resposta.json();
 
 
 
 if(dados.link){
 
+location.href=dados.link;
 
-window.location.href = dados.link;
+}else{
+
+alert("Erro Mercado Pago");
+
+}
+
+
+};
+
+
+
+
+
+
+
+
+// PIX
+
+window.gerarPix = async()=>{
+
+
+const resposta=await fetch("/criar-pix",{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+nome:produtoAtual.nome,
+
+preco:Number(produtoAtual.preco)
+
+})
+
+
+});
+
+
+
+const dados=await resposta.json();
+
+
+
+if(dados.qr_code_base64){
+
+
+
+document.getElementById("pixArea").style.display="block";
+
+
+document.getElementById("qrCode").src=
+
+"data:image/png;base64,"+dados.qr_code_base64;
+
+
+
+document.getElementById("codigoPix").innerHTML=
+
+dados.qr_code;
+
 
 
 }else{
 
 
-alert("Erro ao criar pagamento");
+alert("Erro ao gerar PIX");
 
 
 }
@@ -287,6 +462,27 @@ alert("Erro ao criar pagamento");
 
 };
 
+
+
+
+
+
+
+window.copiarPix=()=>{
+
+
+navigator.clipboard.writeText(
+
+document.getElementById("codigoPix").innerHTML
+
+);
+
+
+alert("PIX copiado!");
+
+
+
+};
 
 
 </script>
