@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pagamento - Loja de Apps</title>
+<title>Pagamento PIX - Loja de Apps</title>
 
 <style>
 
@@ -17,6 +17,7 @@ background:#0f172a;
 color:white;
 }
 
+
 .container{
 max-width:450px;
 margin:50px auto;
@@ -26,16 +27,19 @@ border-radius:15px;
 box-shadow:0 0 20px #000;
 }
 
+
 h1{
 text-align:center;
 color:#38bdf8;
 }
+
 
 .app{
 background:#334155;
 padding:15px;
 border-radius:10px;
 }
+
 
 img{
 width:100%;
@@ -44,13 +48,16 @@ object-fit:cover;
 border-radius:15px;
 }
 
+
 .preco{
 font-size:28px;
 color:#22c55e;
 font-weight:bold;
 }
 
+
 button{
+
 width:100%;
 padding:15px;
 margin-top:15px;
@@ -58,18 +65,51 @@ border:0;
 border-radius:10px;
 font-size:18px;
 cursor:pointer;
+
 }
+
 
 .pagar{
+
 background:#009ee3;
 color:white;
+
 }
 
+
+.copiar{
+
+background:#22c55e;
+color:white;
+
+}
+
+
 .info{
+
 text-align:center;
 margin-top:20px;
 color:#94a3b8;
+
 }
+
+
+#pixArea{
+
+display:none;
+text-align:center;
+margin-top:20px;
+
+}
+
+
+#qrCode{
+
+width:220px;
+height:220px;
+
+}
+
 
 </style>
 
@@ -87,10 +127,12 @@ color:#94a3b8;
 </h1>
 
 
+
 <div class="app">
 
 
 <img id="imagem" src="app.jpg">
+
 
 
 <h2 id="nomeApp">
@@ -98,9 +140,11 @@ Carregando...
 </h2>
 
 
+
 <p id="descricao">
 Carregando...
 </p>
+
 
 
 <div class="preco">
@@ -110,26 +154,57 @@ R$ <span id="preco">0</span>
 </div>
 
 
+
 </div>
 
 
 
 <button class="pagar" onclick="pagar()">
 
-💳 Pagar com Mercado Pago
+📱 Gerar QR Code PIX
 
 </button>
 
 
 
+<div id="pixArea">
+
+
+<h2>
+Pagamento PIX
+</h2>
+
+
+<img id="qrCode">
+
+
+<p id="codigoPix"></p>
+
+
+
+<button class="copiar" onclick="copiarPix()">
+
+📋 Copiar código PIX
+
+</button>
+
+
+
+</div>
+
+
+
+
 <div class="info">
 
-Pagamento seguro Mercado Pago
+Pagamento seguro PIX
 
 </div>
 
 
+
 </div>
+
 
 
 
@@ -141,6 +216,7 @@ Pagamento seguro Mercado Pago
 import { initializeApp }
 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 
 
 import {
@@ -155,17 +231,21 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
 
+
 const firebaseConfig={
+
 
 databaseURL:
 
 "https://minha-loja-5477a-default-rtdb.europe-west1.firebasedatabase.app/"
+
 
 };
 
 
 
 const app=initializeApp(firebaseConfig);
+
 
 const db=getDatabase(app);
 
@@ -177,7 +257,9 @@ const url=new URLSearchParams(window.location.search);
 const id=url.get("id");
 
 
+
 let produtoAtual;
+
 
 
 
@@ -199,12 +281,15 @@ document.getElementById("nomeApp").innerHTML =
 produto.nome || "Aplicativo";
 
 
+
 document.getElementById("preco").innerHTML =
 produto.preco || "0";
 
 
+
 document.getElementById("imagem").src =
 produto.imagem || "app.jpg";
+
 
 
 document.getElementById("descricao").innerHTML =
@@ -215,6 +300,7 @@ produto.descricao || "Sem descrição";
 
 
 });
+
 
 
 
@@ -233,25 +319,36 @@ return;
 
 
 
-const resposta = await fetch("/criar-pagamento",{
+
+const resposta = await fetch("/criar-pix",{
+
 
 method:"POST",
 
+
 headers:{
+
 
 "Content-Type":"application/json"
 
+
 },
+
 
 body:JSON.stringify({
 
+
 produto:produtoAtual.nome,
+
 
 preco:Number(produtoAtual.preco)
 
+
 })
 
+
 });
+
 
 
 
@@ -259,15 +356,60 @@ const dados = await resposta.json();
 
 
 
-if(dados.link){
 
-window.location.href=dados.link;
+if(dados.qr_code_base64){
+
+
+
+document.getElementById("pixArea").style.display="block";
+
+
+
+document.getElementById("qrCode").src =
+
+"data:image/png;base64," + dados.qr_code_base64;
+
+
+
+document.getElementById("codigoPix").innerText =
+
+dados.qr_code;
+
+
 
 }else{
 
-alert("Erro ao criar pagamento");
+
+alert("Erro ao gerar PIX");
+
 
 }
+
+
+
+};
+
+
+
+
+
+
+
+window.copiarPix=function(){
+
+
+
+const codigo =
+document.getElementById("codigoPix").innerText;
+
+
+
+navigator.clipboard.writeText(codigo);
+
+
+
+alert("✅ PIX copiado!");
+
 
 
 };
