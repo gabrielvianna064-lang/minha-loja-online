@@ -107,6 +107,81 @@ app.post("/criar-pagamento", async (req, res) => {
 
 
 
+// Criar PIX QR Code
+app.post("/criar-pix", async (req, res) => {
+
+    try {
+
+        const { nome, preco } = req.body;
+
+
+        const pagamento = await fetch(
+            "https://api.mercadopago.com/v1/payments",
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json",
+
+                    "Authorization":
+                    "Bearer " + process.env.MERCADO_PAGO_ACCESS_TOKEN
+
+                },
+
+
+                body: JSON.stringify({
+
+                    transaction_amount: Number(preco),
+
+                    description: nome,
+
+                    payment_method_id: "pix",
+
+                    payer: {
+
+                        email: "cliente@teste.com"
+
+                    }
+
+                })
+
+            }
+        );
+
+
+        const dados = await pagamento.json();
+
+
+        res.json({
+
+            qr_code:
+            dados.point_of_interaction.transaction_data.qr_code,
+
+            qr_code_base64:
+            dados.point_of_interaction.transaction_data.qr_code_base64
+
+        });
+
+
+    } catch (erro) {
+
+        console.log("Erro PIX:");
+        console.log(erro);
+
+
+        res.status(500).json({
+
+            erro: "Erro ao gerar PIX"
+
+        });
+
+    }
+
+});
+
+
 
 // Teste
 app.get("/teste", (req,res)=>{
@@ -114,8 +189,6 @@ app.get("/teste", (req,res)=>{
     res.send("Servidor funcionando!");
 
 });
-
-
 
 
 
