@@ -1,12 +1,8 @@
-```js
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const {
-    MercadoPagoConfig,
-    Preference
-} = require("mercadopago");
+const { MercadoPagoConfig, Preference } = require("mercadopago");
 
 const app = express();
 
@@ -16,7 +12,7 @@ app.use(express.json());
 app.use(express.static("."));
 
 // ===============================
-// PÁGINA PRINCIPAL
+// PÁGINA INICIAL
 // ===============================
 
 app.get("/", (req, res) => {
@@ -80,7 +76,7 @@ app.post("/criar-pagamento", async (req, res) => {
 
     } catch (erro) {
 
-        console.log("Erro Mercado Pago:", erro);
+        console.error("Erro Mercado Pago:", erro);
 
         res.status(500).json({
             sucesso: false,
@@ -105,6 +101,14 @@ app.post("/cadastrar-vendedor", async (req, res) => {
             loja
         } = req.body;
 
+        if (!nome || !email || !loja) {
+
+            return res.status(400).json({
+                erro: "Preencha nome, email e loja."
+            });
+
+        }
+
         console.log("================================");
         console.log("NOVO VENDEDOR");
         console.log("Nome:", nome);
@@ -122,12 +126,11 @@ app.post("/cadastrar-vendedor", async (req, res) => {
 
     } catch (erro) {
 
-        console.log("Erro cadastro:", erro);
+        console.error("Erro cadastro:", erro);
 
         res.status(500).json({
 
             sucesso: false,
-
             erro: "Falha no cadastro."
 
         });
@@ -137,7 +140,7 @@ app.post("/cadastrar-vendedor", async (req, res) => {
 });
 
 // ===============================
-// CONECTAR MERCADO PAGO VENDEDOR
+// CONECTAR MERCADO PAGO
 // ===============================
 
 app.get("/conectar-mercadopago", (req, res) => {
@@ -154,61 +157,53 @@ app.get("/conectar-mercadopago", (req, res) => {
 
             <title>Conectar Mercado Pago</title>
 
-            <style>
-
-                body {
-                    font-family: Arial, sans-serif;
-                    background: #0f172a;
-                    color: white;
-                    text-align: center;
-                    padding: 50px;
-                }
-
-                button {
-                    padding: 15px 25px;
-                    border: none;
-                    border-radius: 10px;
-                    font-size: 16px;
-                    cursor: pointer;
-                    margin: 10px;
-                }
-
-                .mp {
-                    background: #009ee3;
-                    color: white;
-                }
-
-                .voltar {
-                    background: #28a745;
-                    color: white;
-                }
-
-            </style>
-
         </head>
 
-        <body>
+        <body style="
+            font-family: Arial;
+            text-align: center;
+            padding: 40px;
+        ">
 
             <h1>💳 Conectar Mercado Pago</h1>
 
             <p>
-                Conecte sua conta Mercado Pago para receber
-                os valores das suas vendas.
+                Clique abaixo para acessar sua conta Mercado Pago.
             </p>
 
-            <button
-                class="mp"
-                onclick="window.location.href='https://www.mercadopago.com.br/'">
+            <br>
+
+            <button onclick="
+                window.location.href='https://www.mercadopago.com.br/'
+            "
+            style="
+                padding: 15px;
+                background: #009ee3;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                cursor: pointer;
+            ">
 
                 💳 Abrir Mercado Pago
 
             </button>
 
-            <br>
+            <br><br>
 
-            <button
-                class="voltar"
-                onclick="window.location.href='/central%20do%20vendedor.html'">
+            <button onclick="
+                window.location.href='/central do vendedor.html'
+            "
+            style="
+                padding: 15px;
+                background: #28a745;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                cursor: pointer;
+            ">
 
                 🔙 Voltar para Central do Vendedor
 
@@ -239,9 +234,7 @@ app.get("/api/painel", (req, res) => {
 
         downloads: vendas.length,
 
-        faturamento: Number(
-            faturamento.toFixed(2)
-        ),
+        faturamento: Number(faturamento.toFixed(2)),
 
         aplicativos: 0,
 
@@ -263,27 +256,25 @@ app.post("/api/vendas", (req, res) => {
         valor
     } = req.body;
 
-    const venda = {
+    const valorVenda = Number(valor) || 0;
+
+    vendas.push({
 
         cliente: cliente || "Cliente",
 
         produto: produto || "Produto",
 
-        valor: Number(valor) || 0,
+        valor: valorVenda,
 
         data: new Date().toLocaleDateString("pt-BR")
 
-    };
-
-    vendas.push(venda);
+    });
 
     res.json({
 
         sucesso: true,
 
-        mensagem: "Venda registrada com sucesso.",
-
-        venda: venda
+        mensagem: "Venda registrada com sucesso."
 
     });
 
@@ -300,7 +291,7 @@ app.get("/api/vendas", (req, res) => {
 });
 
 // ===============================
-// TESTE DO SERVIDOR
+// TESTE DO TOKEN
 // ===============================
 
 app.get("/api/status", (req, res) => {
@@ -309,36 +300,34 @@ app.get("/api/status", (req, res) => {
 
         servidor: "online",
 
-        mercadoPago: !!process.env.MP_ACCESS_TOKEN
+        mercado_pago: process.env.MP_ACCESS_TOKEN
+            ? "Access Token configurado"
+            : "Access Token NÃO configurado"
 
     });
 
 });
 
 // ===============================
-// INICIAR SERVIDOR
+// SERVIDOR
 // ===============================
 
-const PORTA = process.env.PORT || 3000;
+app.listen(3000, () => {
 
-app.listen(PORTA, () => {
+    console.log(`
+========================================
+        LOJA ONLINE + MERCADO PAGO
+========================================
 
-    console.log("");
-    console.log("======================================");
-    console.log("      LOJA ONLINE + MERCADO PAGO");
-    console.log("======================================");
-    console.log("");
-    console.log(
-        `Servidor aberto em http://localhost:${PORTA}`
-    );
-    console.log("");
-    console.log(
-        "Mercado Pago:",
-        process.env.MP_ACCESS_TOKEN
-            ? "TOKEN CONFIGURADO"
-            : "TOKEN NÃO CONFIGURADO"
-    );
-    console.log("");
+Servidor aberto em:
+
+http://localhost:3000
+
+Status:
+
+http://localhost:3000/api/status
+
+========================================
+`);
 
 });
-```
